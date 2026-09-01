@@ -47,7 +47,6 @@ const COMMON_TYPO_MAP = {
   'reviw': 'review',
   'meating': 'meeting',
   'metting': 'meeting',
-  'meating': 'meeting',
   'develope': 'develop',
   'develp': 'develop',
   'laucnh': 'launch',

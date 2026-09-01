@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import SmartTaskInput from './components/SmartTaskInput';
 import KanbanBoard from './components/KanbanBoard';
@@ -13,6 +13,7 @@ import UserWelcomeModal from './components/UserWelcomeModal';
 import AdminCMSModal from './components/AdminCMSModal';
 
 import { loadState, saveState } from './utils/storage';
+import { isFirebaseConfigured, syncWorkspaceToCloud, subscribeWorkspace } from './utils/firebase';
 import { triggerCompletionConfetti, soundFx } from './utils/effects';
 import { Bell, X, Coffee, Sparkles } from 'lucide-react';
 
@@ -229,12 +230,37 @@ export default function App() {
   const [pomodoroTaskId, setPomodoroTaskId] = useState('');
   const [pomodoroAlert, setPomodoroAlert] = useState(null); // { message, type }
 
-  const timerIntervalRef = useRef(null);
+  const [isCloudConnected, setIsCloudConnected] = useState(isFirebaseConfigured());
 
-  // Sync state changes to LocalStorage
+  // Real-time Cloud Firestore Workspace Listener
+  useEffect(() => {
+    if (!isFirebaseConfigured()) {
+      setIsCloudConnected(false);
+      return;
+    }
+
+    const workspaceKey = currentUser?.name ? currentUser.name : 'shared_workspace';
+    const unsubscribe = subscribeWorkspace(workspaceKey, (cloudData) => {
+      if (cloudData && Array.isArray(cloudData.tasks)) {
+        setAppState((prev) => ({
+          ...prev,
+          ...cloudData
+        }));
+        setIsCloudConnected(true);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
+
+  // Sync state changes to LocalStorage and Firebase Cloud
   useEffect(() => {
     saveState(appState);
-  }, [appState]);
+    if (isFirebaseConfigured()) {
+      const workspaceKey = currentUser?.name ? currentUser.name : 'shared_workspace';
+      syncWorkspaceToCloud(workspaceKey, appState);
+    }
+  }, [appState, currentUser]);
 
   // Sync sound manager enabled state
   useEffect(() => {
@@ -696,6 +722,7 @@ export default function App() {
         onOpenAdminCMS={handleOpenAdminCMS}
         deletedHistoryCount={deletedTasks.length}
         isAdmin={isAdmin}
+        isCloudConnected={isCloudConnected}
         onLogout={handleLogoutUser}
         onSwitchUser={handleSwitchUser}
       />
