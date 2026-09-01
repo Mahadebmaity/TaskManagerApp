@@ -335,19 +335,21 @@ export default function Navbar({
                       <span>Switch Profile / Edit Name</span>
                     </button>
 
-                    {/* Admin CMS Option */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
-                        if (onOpenAdminCMS) onOpenAdminCMS('users');
-                        soundFx.playPop();
-                      }}
-                      className="w-full px-2.5 py-2 rounded-xl hover:bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium flex items-center gap-2 transition-colors cursor-pointer text-left"
-                    >
-                      <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>{isAdmin ? 'Admin CMS Dashboard' : 'Admin Portal Login'}</span>
-                    </button>
+                    {/* Admin CMS Option - Visible ONLY to Admin */}
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          if (onOpenAdminCMS) onOpenAdminCMS('users');
+                          soundFx.playPop();
+                        }}
+                        className="w-full px-2.5 py-2 rounded-xl hover:bg-slate-800/80 text-cyan-300 hover:text-white text-xs font-medium flex items-center gap-2 transition-colors cursor-pointer text-left"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Admin CMS Dashboard</span>
+                      </button>
+                    )}
 
                     <div className="border-t border-white/10 my-1"></div>
 

@@ -4,19 +4,18 @@ import {
   Heart, 
   Mail, 
   Code2, 
-  ExternalLink,
-  HelpCircle,
-  Zap,
-  Globe,
-  Settings,
-  X,
-  Plus,
-  Trash2,
-  Save,
-  RotateCcw,
-  Check,
-  ShieldCheck,
-  Edit3
+  ExternalLink, 
+  HelpCircle, 
+  Zap, 
+  Globe, 
+  X, 
+  Plus, 
+  Trash2, 
+  Save, 
+  RotateCcw, 
+  Check, 
+  ShieldCheck, 
+  Edit3 
 } from 'lucide-react';
 import { soundFx } from '../utils/effects';
 
@@ -234,50 +233,36 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
                 </div>
               </div>
 
-              {/* Admin Footer Manager Quick Trigger - Visible ONLY to Admin */}
-              {isAdmin ? (
+              {/* Developer Follow Button */}
+              {footerConfig.showFollowButton !== false && (
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (onOpenAdminCMS) onOpenAdminCMS('footer');
-                      else setIsAdminOpen(true);
-                      soundFx.playPop();
-                    }}
-                    className="p-2 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 border border-violet-500/30 hover:border-violet-400 transition-all text-xs flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
-                    title="Admin: Edit Developer Profile & Social Links"
+                  <a
+                    href={footerConfig.followButtonUrl || footerConfig.links?.find((l) => l.platform === 'linkedin' || l.platform === 'github')?.url || 'https://www.linkedin.com/in/mahadeb-maity/'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => soundFx.playPop()}
+                    className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600/20 to-indigo-600/20 hover:from-violet-600/35 hover:to-indigo-600/35 text-violet-300 hover:text-white border border-violet-500/30 hover:border-violet-400 transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+                    title={footerConfig.followButtonText || "View Developer Portfolio & Profile"}
                   >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span className="text-[11px] font-bold hidden sm:inline">Manage</span>
-                  </button>
-                </div>
-              ) : (
-                /* User View: Follow Developer & Quick Admin Settings */
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {footerConfig.showFollowButton !== false && (
-                    <a
-                      href={footerConfig.followButtonUrl || footerConfig.links?.find((l) => l.platform === 'linkedin' || l.platform === 'github')?.url || 'https://www.linkedin.com/in/mahadeb-maity/'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => soundFx.playPop()}
-                      className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600/20 to-indigo-600/20 hover:from-violet-600/35 hover:to-indigo-600/35 text-violet-300 hover:text-white border border-violet-500/30 hover:border-violet-400 transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
-                      title={footerConfig.followButtonText || "View Developer Portfolio & Profile"}
+                    <span>{footerConfig.followButtonText || 'Follow developer'}</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-violet-400" />
+                  </a>
+
+                  {/* Admin Manage button - ONLY visible if logged in as Admin */}
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onOpenAdminCMS) onOpenAdminCMS('footer');
+                        else setIsAdminOpen(true);
+                        soundFx.playPop();
+                      }}
+                      className="p-1.5 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 border border-violet-500/30 hover:border-violet-400 transition-all text-xs flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
+                      title="Admin: Edit Developer Profile & Social Links"
                     >
-                      <span>{footerConfig.followButtonText || 'Follow developer'}</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-violet-400" />
-                    </a>
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (onOpenAdminCMS) onOpenAdminCMS('footer');
-                      soundFx.playPop();
-                    }}
-                    className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-violet-600/20 text-slate-400 hover:text-violet-300 border border-white/10 hover:border-violet-500/30 transition-all text-xs cursor-pointer shadow-sm active:scale-95"
-                    title="Open Admin Settings & CMS"
-                  >
-                    <Settings className="w-3.5 h-3.5" />
-                  </button>
                 </div>
               )}
             </div>
