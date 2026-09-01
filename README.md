@@ -14,7 +14,9 @@
   <strong>An intelligent, high-performance task management and productivity workspace featuring AI-powered Natural Language Parsing, dynamic 4-in-1 workspace views, Zen Pomodoro deep work timers, real-time Cloud Database synchronization, and an in-app Admin CMS.</strong>
 </p>
 
-[✨ Live Features](#-key-features) • [☁️ Database Architecture](#-database-architecture--why-firebase) • [🚀 Vercel Deployment](#-deployment-on-vercel) • [🛠️ Tech Stack](#️-technology-stack) • [🛡️ Admin Portal](#-admin-cms--credentials) • [👨‍💻 Creator](#-creator--developer)
+### 🌐 [**Live Demo: task-manager-app-dun-ten.vercel.app**](https://task-manager-app-dun-ten.vercel.app/)
+
+[🚀 Live App](https://task-manager-app-dun-ten.vercel.app/) • [✨ Key Features](#-key-features) • [☁️ Database Architecture](#-database-architecture--why-firebase) • [🚀 Vercel Deployment](#-deployment-on-vercel) • [🛠️ Tech Stack](#️-technology-stack) • [👨‍💻 Creator](#-creator--developer)
 
 </div>
 
