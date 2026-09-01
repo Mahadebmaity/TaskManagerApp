@@ -6,6 +6,7 @@
 ![React 19](https://img.shields.io/badge/React-19.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite 8](https://img.shields.io/badge/Vite-8.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Database-Firebase_Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-8b5cf6?style=for-the-badge)
 
@@ -13,7 +14,7 @@
   <strong>An intelligent, high-performance task management and productivity workspace featuring AI-powered Natural Language Parsing, dynamic 4-in-1 workspace views, Zen Pomodoro deep work timers, real-time Cloud Database synchronization, and an in-app Admin CMS.</strong>
 </p>
 
-[✨ Live Features](#-key-features) • [☁️ Database Architecture](#-database-architecture--why-firebase) • [🛠️ Tech Stack](#️-technology-stack) • [🛡️ Admin Portal](#-admin-cms--credentials) • [🚀 Quick Start](#-getting-started) • [👨‍💻 Creator](#-creator--developer)
+[✨ Live Features](#-key-features) • [☁️ Database Architecture](#-database-architecture--why-firebase) • [🚀 Vercel Deployment](#-deployment-on-vercel) • [🛠️ Tech Stack](#️-technology-stack) • [🛡️ Admin Portal](#-admin-cms--credentials) • [👨‍💻 Creator](#-creator--developer)
 
 </div>
 
@@ -33,10 +34,13 @@
 - [☁️ Database Architecture & Why Firebase](#-database-architecture--why-firebase)
   - [Why Firebase Cloud Firestore?](#-why-firebase-cloud-firestore-over-traditional-databases)
   - [Hybrid Offline-First Sync Workflow](#-hybrid-offline-first-sync-workflow)
-  - [Database Environment Variables](#-database-environment-variables)
+  - [Step-by-Step Firebase Setup Workflow](#️-step-by-step-firebase-setup-workflow)
+- [🚀 Deployment on Vercel](#-deployment-on-vercel)
+  - [1-Click Deployment Guide](#-step-by-step-vercel-deployment)
+  - [Environment Variables for Production](#-production-environment-variables)
 - [🛠️ Technology Stack](#️-technology-stack)
 - [🛡️ Admin CMS & Credentials](#-admin-cms--credentials)
-- [🚀 Getting Started](#-getting-started)
+- [💻 Getting Started Locally](#-getting-started-locally)
 - [📁 Project Directory Structure](#-project-directory-structure)
 - [⌨️ Keyboard Shortcuts](#️-keyboard-shortcuts)
 - [👨‍💻 Creator & Developer](#-creator--developer)
@@ -127,44 +131,65 @@ This project uses **Google Cloud Firestore (Firebase)** paired with an **Offline
 - **Connected Mode (`☁️ Cloud Sync`):** Reads and writes directly to Firestore documents under `taskmanager_workspaces/{workspace_id}`.
 - **Local Mode (`💾 Local`):** Automatically activated when Firebase credentials are not provided, storing data cleanly in browser `localStorage`.
 
-### 🔑 Database Environment Variables
-
-To activate Cloud Database sync, create a `.env` file in the project root:
-
-```env
-# .env or Vercel Environment Variables
-VITE_FIREBASE_API_KEY=AIzaSy...
-VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-VITE_FIREBASE_APP_ID=1:1234567890:web:...
-```
-
 ### 🛠️ Step-by-Step Firebase Setup Workflow
 
-Setting up Firebase Firestore for this project takes only 3 minutes:
-
 1. **Create a Firebase Project:**
-   - Navigate to the [Firebase Console](https://console.firebase.google.com/) and sign in with your Google account.
-   - Click **`+ Add Project`** and enter a project name (e.g. `taskmanager-app`).
-   - Click **`Create Project`** and proceed to the project dashboard.
+   - Navigate to [console.firebase.google.com](https://console.firebase.google.com/) and sign in.
+   - Click **`+ Add Project`** and enter `TaskManagerApp`.
 
 2. **Initialize Firestore Database:**
-   - In the left sidebar, navigate to **Build ➔ Firestore Database**.
-   - Click **`Create Database`**.
-   - Choose your preferred server location (e.g., `asia-south1` or `us-central`).
-   - Select **"Start in test mode"** to allow read/write access and click **`Enable`**.
+   - Go to **Build ➔ Firestore Database ➔ Create database**.
+   - Choose location and select **"Start in test mode"**.
+   - Set Security Rules to allow read/write:
+     ```javascript
+     rules_version = '2';
+     service cloud.firestore {
+       match /databases/{database}/documents {
+         match /{document=**} {
+           allow read, write: if true;
+         }
+       }
+     }
+     ```
 
 3. **Register Web App & Obtain Config Keys:**
-   - Click the **⚙️ (Gear Icon) ➔ Project settings** at the top left.
-   - Under the **"Your apps"** section, click the **Web `</>`** icon.
-   - Enter an app nickname (e.g., `TaskManager Web`) and click **`Register app`**.
-   - Copy the generated `firebaseConfig` credentials into your local `.env` file (or add them to Vercel's Environment Variables during deployment).
+   - Go to **Project settings (⚙️) ➔ General ➔ Your apps**.
+   - Click Web `</>` icon, register `TaskManager Web`, and copy the `firebaseConfig` keys.
 
-4. **Verify Live Connection:**
-   - Start the app with `npm run dev`.
-   - The status indicator in the top navigation bar will automatically turn to **`☁️ Cloud Sync`**, confirming active cross-device real-time sync.
+---
+
+## 🚀 Deployment on Vercel
+
+The application is fully optimized for continuous deployment on [Vercel](https://vercel.com/).
+
+### ⚡ Step-by-Step Vercel Deployment
+
+1. **Sign in to Vercel:**
+   - Visit [vercel.com](https://vercel.com/) and sign in with your GitHub account.
+2. **Import Repository:**
+   - Click **`Add New... ➔ Project`**.
+   - Select **`TaskManagerApp`** from your repository list and click **`Import`**.
+3. **Configure Project Settings:**
+   - **Framework Preset:** `Vite` (auto-detected)
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+4. **Add Environment Variables:**
+   - Expand the **`Environment Variables`** accordion.
+   - Copy and paste your Firebase production variables:
+
+```env
+VITE_FIREBASE_API_KEY=AIzaSyByLFjsvA4gsEJ0nUWF0NxZZXN9dPFwH2I
+VITE_FIREBASE_AUTH_DOMAIN=taskmanagerapp-769c3.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=taskmanagerapp-769c3
+VITE_FIREBASE_STORAGE_BUCKET=taskmanagerapp-769c3.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=520747171180
+VITE_FIREBASE_APP_ID=1:520747171180:web:476d056589fced65ac4749
+VITE_FIREBASE_DATABASE_URL=https://taskmanagerapp-769c3-default-rtdb.asia-southeast1.firebasedatabase.app
+```
+
+5. **Deploy:**
+   - Click **`Deploy`**. In ~30 seconds your app will be globally live with free SSL HTTPS!
+   - Every subsequent `git push` to `main` will automatically trigger an instant production redeployment.
 
 ---
 
@@ -175,6 +200,7 @@ Setting up Firebase Firestore for this project takes only 3 minutes:
 | **UI Framework** | [React 19](https://react.dev/) | Modern functional components with React Hooks |
 | **Bundler & Server** | [Vite 8](https://vitejs.dev/) | Lightning-fast HMR and optimized production bundle |
 | **Cloud Database** | [Google Cloud Firestore](https://firebase.google.com/docs/firestore) | Real-time NoSQL cloud database for cross-device sync |
+| **Hosting & CI/CD** | [Vercel](https://vercel.com/) | Global Edge network with automatic GitHub CI/CD deployments |
 | **Styling & Design** | [Tailwind CSS v4](https://tailwindcss.com/) | Glassmorphism, CSS variables, dark palette & dynamic gradients |
 | **Icons** | [Lucide React](https://lucide.dev/) | Consistent, lightweight SVG icon system |
 | **Sound FX** | Web Audio API | Client-side synthesized sound design |
@@ -199,7 +225,7 @@ To access the private Admin Management Portal:
 
 ---
 
-## 🚀 Getting Started
+## 💻 Getting Started Locally
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (version 18.x or later recommended)
