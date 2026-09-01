@@ -129,17 +129,42 @@ This project uses **Google Cloud Firestore (Firebase)** paired with an **Offline
 
 ### 🔑 Database Environment Variables
 
-To activate Cloud Database sync, configure your environment variables:
+To activate Cloud Database sync, create a `.env` file in the project root:
 
 ```env
 # .env or Vercel Environment Variables
-VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_API_KEY=AIzaSy...
 VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+VITE_FIREBASE_PROJECT_ID=your_project_id
 VITE_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-VITE_FIREBASE_APP_ID=your_firebase_app_id
+VITE_FIREBASE_APP_ID=1:1234567890:web:...
 ```
+
+### 🛠️ Step-by-Step Firebase Setup Workflow
+
+Setting up Firebase Firestore for this project takes only 3 minutes:
+
+1. **Create a Firebase Project:**
+   - Navigate to the [Firebase Console](https://console.firebase.google.com/) and sign in with your Google account.
+   - Click **`+ Add Project`** and enter a project name (e.g. `taskmanager-app`).
+   - Click **`Create Project`** and proceed to the project dashboard.
+
+2. **Initialize Firestore Database:**
+   - In the left sidebar, navigate to **Build ➔ Firestore Database**.
+   - Click **`Create Database`**.
+   - Choose your preferred server location (e.g., `asia-south1` or `us-central`).
+   - Select **"Start in test mode"** to allow read/write access and click **`Enable`**.
+
+3. **Register Web App & Obtain Config Keys:**
+   - Click the **⚙️ (Gear Icon) ➔ Project settings** at the top left.
+   - Under the **"Your apps"** section, click the **Web `</>`** icon.
+   - Enter an app nickname (e.g., `TaskManager Web`) and click **`Register app`**.
+   - Copy the generated `firebaseConfig` credentials into your local `.env` file (or add them to Vercel's Environment Variables during deployment).
+
+4. **Verify Live Connection:**
+   - Start the app with `npm run dev`.
+   - The status indicator in the top navigation bar will automatically turn to **`☁️ Cloud Sync`**, confirming active cross-device real-time sync.
 
 ---
 
