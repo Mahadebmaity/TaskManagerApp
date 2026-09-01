@@ -729,7 +729,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 pt-6 space-y-6">
+      <main className="flex-1 max-w-[1536px] w-full mx-auto px-3 sm:px-6 pt-6 space-y-6">
         {/* Smart NLP Task Input (Top persistent bar on list and kanban workspace) */}
         {(currentView === 'list' || currentView === 'kanban') && (
           <SmartTaskInput onAddTask={handleAddTask} />

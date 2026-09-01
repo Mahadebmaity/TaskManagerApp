@@ -80,24 +80,24 @@ export default function Navbar({
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-white/10 py-2.5 shadow-xl backdrop-blur-xl">
-      <div className="max-w-7xl w-full mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 sm:gap-3">
+    <header className="sticky top-0 z-40 w-full glass-panel border-b border-white/10 py-2 shadow-xl backdrop-blur-xl">
+      <div className="max-w-[1440px] w-full mx-auto px-2.5 sm:px-4 lg:px-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2">
         
         {/* Left: Unshrinkable Brand Logo & Mobile Tools */}
-        <div className="flex items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+        <div className="flex items-center justify-between gap-2.5 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             <Logo size="md" />
             <div className="flex flex-col shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="text-xl sm:text-2xl font-black tracking-tight text-white text-gradient whitespace-nowrap">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="text-lg sm:text-xl lg:text-xl xl:text-2xl font-black tracking-tight text-white text-gradient whitespace-nowrap">
                   Your task Manager
                 </span>
-                <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-violet-600/30 to-cyan-500/30 text-cyan-300 border border-cyan-400/40 shadow-sm shrink-0 flex items-center gap-1">
+                <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-violet-600/30 to-cyan-500/30 text-cyan-300 border border-cyan-400/40 shadow-sm shrink-0 flex items-center gap-1">
                   <Sparkles className="w-2.5 h-2.5 text-cyan-400 shrink-0" />
-                  <span>AI Powered</span>
+                  <span className="hidden sm:inline">AI Powered</span>
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 font-medium whitespace-nowrap hidden sm:block">
+              <p className="text-[10px] text-slate-400 font-medium whitespace-nowrap hidden 2xl:block">
                 Smart Task Intelligence & Deep Work
               </p>
             </div>
@@ -159,7 +159,7 @@ export default function Navbar({
         </div>
 
         {/* Center: Ultra-Compact Search Bar with Expand on Focus */}
-        <div id="tour-search-bar" className="relative w-full md:w-28 lg:w-36 md:focus-within:w-44 lg:focus-within:w-48 shrink-0 transition-all duration-300 group">
+        <div id="tour-search-bar" className="relative w-full md:w-24 lg:w-32 xl:w-40 md:focus-within:w-36 lg:focus-within:w-48 shrink-0 transition-all duration-300 group">
           <div className="relative flex items-center">
             <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 transition-colors pointer-events-none ${
               searchQuery ? 'text-cyan-400' : 'text-slate-400 group-focus-within:text-cyan-400'
@@ -198,12 +198,12 @@ export default function Navbar({
         </div>
 
         {/* Right: View Switcher & Desktop Tools */}
-        <div className="flex items-center gap-1.5 lg:gap-2.5 w-full md:w-auto justify-between md:justify-end shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-2 w-full md:w-auto justify-between md:justify-end shrink-0">
           
-          {/* Main Navigation Views - No Scrollbar Glass Capsule Switcher */}
+          {/* Main Navigation Views - Glass Capsule Switcher */}
           <div 
             id="tour-view-switcher" 
-            className="no-scrollbar flex items-center p-0.5 sm:p-1 bg-slate-950/80 rounded-2xl border border-white/15 w-full sm:w-auto justify-between sm:justify-start overflow-x-auto shadow-inner shrink-0"
+            className="no-scrollbar flex items-center p-0.5 bg-slate-950/80 rounded-2xl border border-white/15 w-full sm:w-auto justify-between sm:justify-start overflow-x-auto shadow-inner shrink-0 gap-0.5"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {/* Kanban View Button */}
@@ -213,9 +213,9 @@ export default function Navbar({
                 setCurrentView('kanban');
                 soundFx.playPop();
               }}
-              className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${
+              className={`px-2 sm:px-2.5 py-1 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all duration-200 cursor-pointer ${
                 currentView === 'kanban'
-                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_0_15px_rgba(139,92,246,0.4)] scale-100'
+                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_0_12px_rgba(139,92,246,0.35)] scale-100'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
               }`}
             >
@@ -230,9 +230,9 @@ export default function Navbar({
                 setCurrentView('list');
                 soundFx.playPop();
               }}
-              className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${
+              className={`px-2 sm:px-2.5 py-1 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all duration-200 cursor-pointer ${
                 currentView === 'list'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.4)] scale-100'
+                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-[0_0_12px_rgba(6,182,212,0.35)] scale-100'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
               }`}
             >
@@ -247,14 +247,14 @@ export default function Navbar({
                 setCurrentView('analytics');
                 soundFx.playPop();
               }}
-              className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${
+              className={`px-2 sm:px-2.5 py-1 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all duration-200 cursor-pointer ${
                 currentView === 'analytics'
-                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)] scale-100'
+                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-[0_0_12px_rgba(99,102,241,0.35)] scale-100'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5 shrink-0" />
-              <span>Analytics</span>
+              <span className="hidden lg:inline">Analytics</span>
             </button>
 
             {/* History View Button with Badge Counter */}
@@ -264,9 +264,9 @@ export default function Navbar({
                 setCurrentView('history');
                 soundFx.playPop();
               }}
-              className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${
+              className={`px-2 sm:px-2.5 py-1 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all duration-200 cursor-pointer ${
                 currentView === 'history'
-                  ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] scale-100'
+                  ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white shadow-[0_0_12px_rgba(244,63,94,0.35)] scale-100'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
               }`}
             >
@@ -283,7 +283,7 @@ export default function Navbar({
           </div>
 
           {/* Desktop Right Tools */}
-          <div className="hidden md:flex items-center gap-1.5 lg:gap-2 shrink-0">
+          <div className="hidden md:flex items-center gap-1 xl:gap-1.5 shrink-0">
             
             {/* Interactive User Profile & Logout Popover Button */}
             {currentUser && (
@@ -294,11 +294,11 @@ export default function Navbar({
                     setIsUserMenuOpen(!isUserMenuOpen);
                     soundFx.playPop();
                   }}
-                  className="px-2.5 py-1.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-white/15 text-slate-200 flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm hover:border-violet-500/40 cursor-pointer shrink-0"
+                  className="px-2 py-1.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-white/15 text-slate-200 flex items-center gap-1 text-xs font-bold transition-all shadow-sm hover:border-violet-500/40 cursor-pointer shrink-0"
                   title="Click to view profile or logout"
                 >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-                  <span className="max-w-[85px] lg:max-w-[110px] truncate text-slate-100">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                  <span className="max-w-[65px] xl:max-w-[90px] truncate text-slate-100">
                     Hi, {currentUser.name}
                   </span>
                   <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform duration-200 shrink-0 ${
@@ -373,7 +373,7 @@ export default function Navbar({
             <button
               id="tour-focus-timer"
               onClick={onOpenFocusTimer}
-              className={`px-2.5 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer relative overflow-hidden ${
+              className={`px-2 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all shrink-0 cursor-pointer relative overflow-hidden ${
                 isAnyRunning
                   ? 'bg-emerald-950/80 border-emerald-400/90 text-emerald-300 animate-live-timer'
                   : activeSession?.timeLeft < activeSession?.totalDuration
@@ -386,7 +386,7 @@ export default function Navbar({
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/15 to-transparent animate-timer-shimmer pointer-events-none"></div>
               )}
 
-              <div className="flex items-center gap-1.5 relative z-10">
+              <div className="flex items-center gap-1 relative z-10">
                 {isAnyRunning && (
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#10b981] animate-pulse"></span>
                 )}
@@ -395,16 +395,16 @@ export default function Navbar({
 
               {isAnyRunning || activeSession?.timeLeft < activeSession?.totalDuration ? (
                 <div className="flex items-center gap-1 font-mono relative z-10">
-                  <span className="tracking-wider text-white">
+                  <span className="tracking-wider text-white text-[11px]">
                     {String(Math.floor(activeSession.timeLeft / 60)).padStart(2, '0')}:
                     {String(activeSession.timeLeft % 60).padStart(2, '0')}
                   </span>
-                  <span className="text-[9px] uppercase font-sans font-extrabold px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  <span className="text-[8px] uppercase font-sans font-extrabold px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                     {activeMode === 'focus' ? 'Focus' : activeMode === 'shortBreak' ? 'Short' : 'Long'}
                   </span>
                 </div>
               ) : (
-                <span className="relative z-10 hidden xl:inline">Focus Timer</span>
+                <span className="relative z-10 hidden 2xl:inline">Focus Timer</span>
               )}
             </button>
 
@@ -412,48 +412,47 @@ export default function Navbar({
             <button
               id="tour-sound-toggle"
               onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-1.5 lg:p-2 rounded-xl bg-slate-900/80 border border-white/10 text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-xs shrink-0 cursor-pointer"
+              className="p-1.5 rounded-xl bg-slate-900/80 border border-white/10 text-slate-300 hover:text-white hover:bg-slate-800 transition-all text-xs shrink-0 cursor-pointer"
               title={soundEnabled ? 'Mute sound effects' : 'Enable sound effects'}
             >
-              {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
+              {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-cyan-400" /> : <VolumeX className="w-3.5 h-3.5 text-slate-500" />}
             </button>
 
             {/* Tour / Guide Button */}
             <button
               onClick={onOpenTour}
-              className="p-1.5 lg:p-2 rounded-xl bg-slate-900/80 border border-white/10 text-slate-300 hover:text-violet-300 hover:border-violet-500/40 hover:bg-violet-950/30 transition-all text-xs shrink-0 cursor-pointer"
+              className="p-1.5 rounded-xl bg-slate-900/80 border border-white/10 text-slate-300 hover:text-violet-300 hover:border-violet-500/40 hover:bg-violet-950/30 transition-all text-xs shrink-0 cursor-pointer"
               title="Feature Tour & User Guide"
               aria-label="User Guide"
             >
-              <HelpCircle className="w-4 h-4" />
+              <HelpCircle className="w-3.5 h-3.5" />
             </button>
 
             {/* Cloud Real-Time Database Sync Indicator */}
             <div 
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-xl border text-[11px] font-bold transition-all shrink-0 cursor-default select-none ${
+              className={`flex items-center gap-1 px-1.5 py-1 rounded-xl border text-[10px] font-bold transition-all shrink-0 cursor-default select-none ${
                 isCloudConnected 
-                  ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.15)]' 
+                  ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.15)]' 
                   : 'bg-slate-900/70 border-white/10 text-slate-400'
               }`}
               title={isCloudConnected ? 'Cloud Database Connected: Live Real-Time Multi-Device Sync Active' : 'Local Storage Mode: Add Firebase to enable cross-device live sync'}
             >
               {isCloudConnected ? (
                 <>
-                  <Cloud className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-                  <span className="hidden xl:inline">Cloud Sync</span>
+                  <Cloud className="w-3 h-3 text-cyan-400 animate-pulse" />
+                  <span className="hidden 2xl:inline">Cloud Sync</span>
                 </>
               ) : (
                 <>
-                  <Database className="w-3.5 h-3.5 text-slate-500" />
-                  <span className="hidden xl:inline text-[10px] text-slate-500">Local</span>
+                  <Database className="w-3 h-3 text-slate-500" />
+                  <span className="hidden 2xl:inline text-[9px] text-slate-500">Local</span>
                 </>
               )}
             </div>
 
             {/* Stats Badge */}
-            <div id="tour-stats-badge" className="flex items-center gap-1 pl-1.5 border-l border-white/10 text-xs shrink-0 whitespace-nowrap">
-              <span className="text-slate-400 hidden xl:inline">Done:</span>
-              <span className="font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md text-[11px]">
+            <div id="tour-stats-badge" className="flex items-center gap-1 pl-1 border-l border-white/10 text-xs shrink-0 whitespace-nowrap">
+              <span className="font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md text-[10px] sm:text-[11px]">
                 {taskStats.completed}/{taskStats.total}
               </span>
             </div>
