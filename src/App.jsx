@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import SmartTaskInput from './components/SmartTaskInput';
 import KanbanBoard from './components/KanbanBoard';
@@ -229,6 +229,7 @@ export default function App() {
 
   const [pomodoroTaskId, setPomodoroTaskId] = useState('');
   const [pomodoroAlert, setPomodoroAlert] = useState(null); // { message, type }
+  const timerIntervalRef = useRef(null);
 
   const [isCloudConnected, setIsCloudConnected] = useState(isFirebaseConfigured());
 
