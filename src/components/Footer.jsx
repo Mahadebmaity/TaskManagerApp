@@ -342,25 +342,13 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
             <span>· All rights reserved.</span>
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] sm:text-xs">
+          <div className="flex items-center gap-1.5 text-[11px] sm:text-xs">
             <span>Crafted with</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 animate-pulse" />
             <span>by</span>
             <span className="font-bold text-slate-200">
               {footerConfig.developerName}
             </span>
-            <button
-              type="button"
-              onClick={() => {
-                if (onOpenAdminCMS) onOpenAdminCMS('footer');
-                else setIsAdminOpen(true);
-                soundFx.playPop();
-              }}
-              className="p-1 text-slate-500 hover:text-slate-300 rounded cursor-pointer transition-colors"
-              title="Admin Footer & CMS Settings"
-            >
-              <Settings className="w-3.5 h-3.5" />
-            </button>
           </div>
         </div>
 
