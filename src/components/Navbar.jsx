@@ -15,9 +15,7 @@ import {
   ChevronDown,
   LogOut,
   Sparkles,
-  X,
-  Cloud,
-  Database
+  X
 } from 'lucide-react';
 import { soundFx } from '../utils/effects';
 
@@ -429,28 +427,6 @@ export default function Navbar({
             >
               <HelpCircle className="w-3.5 h-3.5" />
             </button>
-
-            {/* Cloud Real-Time Database Sync Indicator */}
-            <div 
-              className={`flex items-center gap-1 px-1.5 py-1 rounded-xl border text-[10px] font-bold transition-all shrink-0 cursor-default select-none ${
-                isCloudConnected 
-                  ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.15)]' 
-                  : 'bg-slate-900/70 border-white/10 text-slate-400'
-              }`}
-              title={isCloudConnected ? 'Cloud Database Connected: Live Real-Time Multi-Device Sync Active' : 'Local Storage Mode: Add Firebase to enable cross-device live sync'}
-            >
-              {isCloudConnected ? (
-                <>
-                  <Cloud className="w-3 h-3 text-cyan-400 animate-pulse" />
-                  <span className="hidden 2xl:inline">Cloud Sync</span>
-                </>
-              ) : (
-                <>
-                  <Database className="w-3 h-3 text-slate-500" />
-                  <span className="hidden 2xl:inline text-[9px] text-slate-500">Local</span>
-                </>
-              )}
-            </div>
 
             {/* Stats Badge */}
             <div id="tour-stats-badge" className="flex items-center gap-1 pl-1 border-l border-white/10 text-xs shrink-0 whitespace-nowrap">
