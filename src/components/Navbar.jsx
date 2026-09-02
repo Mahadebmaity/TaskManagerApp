@@ -85,6 +85,19 @@ export default function Navbar({
     };
   }, []);
 
+  // Track scroll position to keep only website brand sticky on mobile while scrolling
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 20;
+      setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Shared User Dropdown Content Component
   const renderUserDropdown = () => (
     <div className="absolute right-0 top-full mt-2 w-60 glass-panel rounded-2xl border border-white/20 shadow-2xl p-2.5 z-50 animate-scaleIn backdrop-blur-2xl">
@@ -149,15 +162,17 @@ export default function Navbar({
   );
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-white/10 py-2 shadow-xl backdrop-blur-xl">
+    <header className={`sticky top-0 z-40 w-full glass-panel border-b border-white/10 shadow-xl backdrop-blur-xl transition-all duration-300 ${
+      isScrolled ? 'py-1.5' : 'py-2'
+    }`}>
       <div className="max-w-[1440px] w-full mx-auto px-2.5 sm:px-4 lg:px-6">
         
         {/* ========================================================================= */}
         {/* MOBILE VIEW (Screens < 768px): Structured cleanly into 4 distinct lines  */}
         {/* ========================================================================= */}
-        <div className="flex md:hidden flex-col gap-2 w-full">
+        <div className="flex md:hidden flex-col gap-1.5 w-full transition-all duration-300">
           
-          {/* LINE 1: Brand Logo + Website Name + AI Powered (Click to reset to Home) */}
+          {/* LINE 1: Brand Logo + Website Name + AI Powered (ALWAYS STICKY) */}
           <div className="flex items-center justify-between w-full">
             <button
               type="button"
@@ -178,8 +193,14 @@ export default function Navbar({
             </button>
           </div>
 
-          {/* LINE 2: Actions Bar with borderless sleek icons */}
-          <div className="flex items-center justify-between gap-1 w-full pt-0.5 px-0.5">
+          {/* Lines 2, 3, 4: Collapsible on scroll (hidden when scrolled, visible at top) */}
+          <div className={`flex flex-col gap-2 w-full overflow-hidden transition-all duration-300 ease-in-out ${
+            isScrolled 
+              ? 'max-h-0 opacity-0 pointer-events-none scale-y-95 origin-top -my-1' 
+              : 'max-h-[300px] opacity-100 scale-y-100 origin-top'
+          }`}>
+            {/* LINE 2: Actions Bar with borderless sleek icons */}
+            <div className="flex items-center justify-between gap-1 w-full pt-0.5 px-0.5">
             <div className="flex items-center gap-1">
               {/* Focus Timer Button */}
               <button
@@ -373,6 +394,7 @@ export default function Navbar({
             </button>
           </div>
 
+        </div>
         </div>
 
         {/* ========================================================================= */}
