@@ -184,7 +184,7 @@ export default function KanbanBoard({ tasks, onUpdateStatus, onMoveTask, onDelet
                     return (
                       <div
                         key={task.id}
-                        id={col.id === 'todo' && taskIdx === 0 ? "tour-list-first-task" : undefined}
+                        id={taskIdx === 0 ? "tour-list-first-task" : undefined}
                         draggable
                         onDragStart={(e) => handleDragStart(e, task.id)}
                         onDragEnd={handleDragEnd}
