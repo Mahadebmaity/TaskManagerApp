@@ -281,10 +281,10 @@ export default function Navbar({
               : 'max-h-[350px] opacity-100 translate-y-0 overflow-visible animate-nav-reveal'
           }`}>
             {/* LINE 2: Actions Bar distributed seamlessly across full width - Toggled by arrow button with smooth 600ms transition */}
-            <div className={`overflow-hidden transition-all duration-600 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${
+            <div className={`transition-all duration-600 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${
               isMobileLine2Open 
-                ? 'max-h-[80px] opacity-100 translate-x-0' 
-                : 'max-h-0 opacity-0 -translate-x-6 pointer-events-none -my-1'
+                ? `max-h-[350px] opacity-100 translate-x-0 ${isUserMenuOpen ? 'overflow-visible relative z-50' : 'overflow-visible'}` 
+                : 'max-h-0 opacity-0 -translate-x-6 pointer-events-none -my-1 overflow-hidden'
             }`}>
               <div className="flex items-center justify-between w-full py-1 px-0.5 gap-1 transition-all duration-300">
               {/* Focus Timer Button */}
@@ -528,10 +528,10 @@ export default function Navbar({
           </div>
 
           {/* Collapsible Desktop Nav Tools Container - Smooth Left to Right Reveal */}
-          <div className={`flex items-center justify-end gap-3 flex-1 overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${
+          <div className={`flex items-center justify-end gap-3 flex-1 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${
             isDesktopNavOpen 
-              ? 'max-w-[1200px] opacity-100 translate-x-0' 
-              : 'max-w-0 opacity-0 -translate-x-8 pointer-events-none'
+              ? `max-w-[1200px] opacity-100 translate-x-0 ${isUserMenuOpen ? 'overflow-visible relative z-50' : 'overflow-visible'}` 
+              : 'max-w-0 opacity-0 -translate-x-8 pointer-events-none overflow-hidden'
           }`}>
           {/* Center: Search Bar with Expand on Focus */}
           <div id="tour-search-bar" className="relative w-28 lg:w-40 xl:w-48 focus-within:w-44 lg:focus-within:w-56 shrink-0 transition-all duration-300 group">
