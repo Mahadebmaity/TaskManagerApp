@@ -292,12 +292,6 @@ export default function OnboardingTour({ isOpen, onClose }) {
     }
 
     const calculatePosition = () => {
-      const el = document.querySelector(currentStep.targetSelector);
-      if (!el) {
-        setTargetRect(null);
-        return;
-      }
-
       const isNavbarItem = [
         '#tour-view-switcher',
         '#tour-focus-timer',
@@ -305,6 +299,18 @@ export default function OnboardingTour({ isOpen, onClose }) {
         '#tour-sound-toggle',
         '#tour-stats-badge'
       ].includes(currentStep.targetSelector);
+
+      // If the target element is inside collapsed navbar, trigger event to expand navbar
+      if (isNavbarItem) {
+        window.dispatchEvent(new CustomEvent('expand-navbar-for-tour'));
+      }
+
+      // Check element after a slight microtick so DOM / navbar expansion is applied
+      const el = document.querySelector(currentStep.targetSelector);
+      if (!el) {
+        setTargetRect(null);
+        return;
+      }
 
       if (isNavbarItem || currentStep.id === 'smart-input') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -314,59 +320,76 @@ export default function OnboardingTour({ isOpen, onClose }) {
         const elRect = el.getBoundingClientRect();
         const absoluteTop = elRect.top + window.pageYOffset;
         window.scrollTo({
-          top: Math.max(0, absoluteTop - 100),
+          top: Math.max(0, absoluteTop - 120),
           behavior: 'smooth'
         });
       }
       
       const updateRect = () => {
-        const rect = el.getBoundingClientRect();
+        const activeEl = document.querySelector(currentStep.targetSelector);
+        if (!activeEl) {
+          setTargetRect(null);
+          return;
+        }
+
+        const rect = activeEl.getBoundingClientRect();
+
+        // Ensure element is actually rendered and visible (width > 0 & height > 0)
+        if (rect.width <= 0 || rect.height <= 0) {
+          setTargetRect(null);
+          return;
+        }
+
         setTargetRect(rect);
 
-        const popoverWidth = Math.min(380, window.innerWidth - 32);
-        const estimatedHeight = 240;
+        const popoverWidth = Math.min(390, window.innerWidth - 32);
+        const estimatedHeight = 250;
 
         let top = null;
         let bottom = null;
 
-        // Smart clearance check
+        // Check clearance: prefer placing below if space allows, otherwise above, or fallback
         const spaceBelow = window.innerHeight - rect.bottom;
         const spaceAbove = rect.top;
 
-        if (spaceBelow >= estimatedHeight + 20) {
-          top = rect.bottom + 16;
-        } else if (spaceAbove >= estimatedHeight + 20) {
-          bottom = window.innerHeight - rect.top + 16;
+        if (spaceBelow >= estimatedHeight + 16) {
+          top = Math.max(16, rect.bottom + 16);
+        } else if (spaceAbove >= estimatedHeight + 16) {
+          bottom = Math.max(16, window.innerHeight - rect.top + 16);
+        } else if (spaceBelow >= spaceAbove) {
+          top = Math.max(16, rect.bottom + 12);
         } else {
-          bottom = 20;
+          bottom = Math.max(16, window.innerHeight - rect.top + 12);
         }
 
-        // Horizontal alignment: Center over target, clamped to screen edges
+        // Horizontal alignment: Center over target, clamped to screen margins
         const targetCenter = rect.left + rect.width / 2;
         let left = targetCenter - popoverWidth / 2;
         left = Math.max(16, Math.min(left, window.innerWidth - popoverWidth - 16));
 
         // Calculate safe maxHeight
-        let maxHeight = 300;
+        let maxHeight = 320;
         if (top !== null) {
-          maxHeight = Math.max(180, window.innerHeight - top - 16);
+          maxHeight = Math.max(200, window.innerHeight - top - 24);
         } else if (bottom !== null) {
-          maxHeight = Math.max(180, window.innerHeight - bottom - 16);
+          maxHeight = Math.max(200, window.innerHeight - bottom - 24);
         }
 
         setPopoverPos({ top, bottom, left, width: popoverWidth, maxHeight });
       };
 
       updateRect();
-      const t1 = setTimeout(updateRect, 100);
-      const t2 = setTimeout(updateRect, 300);
+      const t1 = setTimeout(updateRect, 80);
+      const t2 = setTimeout(updateRect, 200);
+      const t3 = setTimeout(updateRect, 450);
       return () => {
         clearTimeout(t1);
         clearTimeout(t2);
+        clearTimeout(t3);
       };
     };
 
-    const timeout = setTimeout(calculatePosition, 60);
+    const timeout = setTimeout(calculatePosition, 50);
     window.addEventListener('resize', calculatePosition);
     window.addEventListener('scroll', calculatePosition);
 

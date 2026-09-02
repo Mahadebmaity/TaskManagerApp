@@ -129,10 +129,19 @@ export default function Navbar({
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
     window.addEventListener('keydown', handleKeyDown);
+
+    // Expand navbar automatically if guided tour focuses on a navbar tool
+    const handleTourExpand = () => {
+      setIsDesktopNavOpen(true);
+      setIsMobileLine2Open(true);
+    };
+    window.addEventListener('expand-navbar-for-tour', handleTourExpand);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('expand-navbar-for-tour', handleTourExpand);
     };
   }, []);
 
