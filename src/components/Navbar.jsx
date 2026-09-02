@@ -203,15 +203,15 @@ export default function Navbar({
               ? 'max-h-[350px] opacity-100 translate-y-0 overflow-visible relative z-50 animate-nav-reveal'
               : 'max-h-[350px] opacity-100 translate-y-0 overflow-visible animate-nav-reveal'
           }`}>
-            {/* LINE 2: Actions Bar distributed evenly across full width */}
-            <div className="flex items-center justify-between w-full p-1 rounded-2xl bg-slate-900/60 [html.light_&]:bg-slate-100/90 border border-white/10 [html.light_&]:border-slate-200/80 shadow-sm gap-1 transition-all duration-300">
-              {/* Focus Timer Button - Flex growing with timer status */}
+            {/* LINE 2: Actions Bar distributed seamlessly across full width without borders */}
+            <div className="flex items-center justify-between w-full py-1 px-0.5 gap-1 transition-all duration-300">
+              {/* Focus Timer Button */}
               <button
                 type="button"
                 onClick={onOpenFocusTimer}
                 className={`flex-1 py-1.5 px-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-xs font-bold cursor-pointer ${
                   isAnyRunning
-                    ? 'bg-emerald-950/80 text-emerald-300 animate-live-timer shadow-sm'
+                    ? 'bg-emerald-950/80 text-emerald-300 animate-live-timer'
                     : activeSession?.timeLeft < activeSession?.totalDuration
                     ? 'bg-amber-500/15 text-amber-300'
                     : 'text-emerald-400 hover:bg-emerald-500/10'
@@ -226,13 +226,11 @@ export default function Navbar({
                 </span>
               </button>
 
-              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
-
               {/* Light & Dark Mode Toggle Button */}
               <button
                 type="button"
                 onClick={onToggleTheme}
-                className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-amber-400 hover:bg-white/5 [html.light_&]:hover:bg-white/60 transition-colors flex items-center justify-center cursor-pointer"
+                className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-amber-400 hover:bg-white/5 [html.light_&]:hover:bg-slate-200/50 transition-colors flex items-center justify-center cursor-pointer"
                 title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               >
                 {theme === 'dark' ? (
@@ -241,8 +239,6 @@ export default function Navbar({
                   <Moon className="w-4 h-4 text-violet-500 transition-transform active:-rotate-45" />
                 )}
               </button>
-
-              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
 
               {/* Mobile User Profile Trigger with Popover attached */}
               {currentUser && (
@@ -253,7 +249,7 @@ export default function Navbar({
                       setIsUserMenuOpen(!isUserMenuOpen);
                       soundFx.playPop();
                     }}
-                    className="w-full py-1 rounded-xl text-slate-200 flex items-center justify-center gap-1 text-xs font-bold cursor-pointer hover:bg-white/5 [html.light_&]:hover:bg-white/60 transition-colors"
+                    className="w-full py-1 rounded-xl text-slate-200 flex items-center justify-center gap-1 text-xs font-bold cursor-pointer hover:bg-white/5 [html.light_&]:hover:bg-slate-200/50 transition-colors"
                     title="User Profile & Logout"
                   >
                     <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center font-bold text-[10px] text-white shadow-sm ring-1 ring-white/20">
@@ -266,31 +262,25 @@ export default function Navbar({
                 </div>
               )}
 
-              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
-
               {/* Speaker / Audio Toggle */}
               <button
                 type="button"
                 onClick={() => setSoundEnabled(!soundEnabled)}
-                className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-white hover:bg-white/5 [html.light_&]:hover:bg-white/60 transition-colors flex items-center justify-center cursor-pointer"
+                className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-white hover:bg-white/5 [html.light_&]:hover:bg-slate-200/50 transition-colors flex items-center justify-center cursor-pointer"
                 title={soundEnabled ? 'Mute sound' : 'Enable sound'}
               >
                 {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-slate-400" />}
               </button>
 
-              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
-
               {/* Guide / Tour Button */}
               <button
                 type="button"
                 onClick={onOpenTour}
-                className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-violet-300 hover:bg-white/5 [html.light_&]:hover:bg-white/60 transition-colors flex items-center justify-center cursor-pointer"
+                className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-violet-300 hover:bg-white/5 [html.light_&]:hover:bg-slate-200/50 transition-colors flex items-center justify-center cursor-pointer"
                 title="User Guide Tour"
               >
                 <HelpCircle className="w-4 h-4" />
               </button>
-
-              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
 
               {/* Task Completed Stats Badge */}
               <div className="flex-1 flex items-center justify-center" title="Completed / Total Tasks">
