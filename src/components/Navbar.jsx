@@ -101,8 +101,12 @@ export default function Navbar({
   }, []);
 
   // Shared User Dropdown Content Component
-  const renderUserDropdown = () => (
-    <div className="absolute right-0 top-full mt-2 w-60 glass-panel rounded-2xl border border-white/20 shadow-2xl p-2.5 z-50 animate-scaleIn backdrop-blur-2xl">
+  const renderUserDropdown = (align = 'desktop') => (
+    <div className={`absolute top-full mt-2 w-64 max-w-[calc(100vw-24px)] glass-panel rounded-2xl border border-white/20 shadow-2xl p-2.5 z-50 animate-scaleIn backdrop-blur-2xl ${
+      align === 'mobile'
+        ? 'left-1/2 -translate-x-1/2'
+        : 'right-0'
+    }`}>
       <div className="p-2 border-b border-white/10 mb-1.5 flex items-center gap-2.5">
         <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center font-bold text-xs text-white shadow-md shrink-0">
           {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
@@ -123,7 +127,7 @@ export default function Navbar({
           if (onSwitchUser) onSwitchUser();
           soundFx.playPop();
         }}
-        className="w-full px-2.5 py-2 rounded-xl hover:bg-slate-800/80 text-slate-300 hover:text-white text-xs font-medium flex items-center gap-2 transition-colors cursor-pointer text-left"
+        className="w-full px-2.5 py-2 rounded-xl hover:bg-slate-800/80 [html.light_&]:hover:bg-slate-200/70 text-slate-300 [html.light_&]:text-slate-800 hover:text-white text-xs font-medium flex items-center gap-2 transition-colors cursor-pointer text-left"
       >
         <User className="w-3.5 h-3.5 text-violet-400" />
         <span>Switch Profile / Edit Name</span>
@@ -138,7 +142,7 @@ export default function Navbar({
             if (onOpenAdminCMS) onOpenAdminCMS('users');
             soundFx.playPop();
           }}
-          className="w-full px-2.5 py-2 rounded-xl hover:bg-slate-800/80 text-cyan-300 hover:text-white text-xs font-medium flex items-center gap-2 transition-colors cursor-pointer text-left"
+          className="w-full px-2.5 py-2 rounded-xl hover:bg-slate-800/80 [html.light_&]:hover:bg-slate-200/70 text-cyan-300 [html.light_&]:text-cyan-700 hover:text-white text-xs font-medium flex items-center gap-2 transition-colors cursor-pointer text-left"
         >
           <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
           <span>Admin CMS Dashboard</span>
@@ -257,8 +261,8 @@ export default function Navbar({
                     </div>
                   </button>
 
-                  {/* Dropdown rendered right under the mobile avatar */}
-                  {isUserMenuOpen && renderUserDropdown()}
+                  {/* Dropdown rendered right under the mobile avatar with center alignment */}
+                  {isUserMenuOpen && renderUserDropdown('mobile')}
                 </div>
               )}
 
