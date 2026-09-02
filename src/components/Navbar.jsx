@@ -51,22 +51,22 @@ export default function Navbar({
   const userMenuRef = useRef(null);
   const mobileUserMenuRef = useRef(null);
 
-  // Toggleable states: Laptop/Desktop nav tools & Mobile Line 2 actions row
+  // Toggleable states: Laptop/Desktop nav tools & Mobile Line 2 actions row (DEFAULT: CLOSED / FALSE)
   const [isDesktopNavOpen, setIsDesktopNavOpen] = useState(() => {
     try {
       const saved = localStorage.getItem('taskmanager_desktop_nav_open');
-      return saved !== null ? JSON.parse(saved) : true;
+      return saved !== null ? JSON.parse(saved) : false;
     } catch {
-      return true;
+      return false;
     }
   });
 
   const [isMobileLine2Open, setIsMobileLine2Open] = useState(() => {
     try {
       const saved = localStorage.getItem('taskmanager_mobile_line2_open');
-      return saved !== null ? JSON.parse(saved) : true;
+      return saved !== null ? JSON.parse(saved) : false;
     } catch {
-      return true;
+      return false;
     }
   });
 
@@ -271,11 +271,11 @@ export default function Navbar({
               ? 'max-h-[350px] opacity-100 translate-y-0 overflow-visible relative z-50 animate-nav-reveal'
               : 'max-h-[350px] opacity-100 translate-y-0 overflow-visible animate-nav-reveal'
           }`}>
-            {/* LINE 2: Actions Bar distributed seamlessly across full width - Toggled by arrow button */}
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            {/* LINE 2: Actions Bar distributed seamlessly across full width - Toggled by arrow button with smooth 600ms transition */}
+            <div className={`overflow-hidden transition-all duration-600 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${
               isMobileLine2Open 
-                ? 'max-h-[80px] opacity-100' 
-                : 'max-h-0 opacity-0 pointer-events-none -my-1'
+                ? 'max-h-[80px] opacity-100 translate-x-0' 
+                : 'max-h-0 opacity-0 -translate-x-6 pointer-events-none -my-1'
             }`}>
               <div className="flex items-center justify-between w-full py-1 px-0.5 gap-1 transition-all duration-300">
               {/* Focus Timer Button */}
@@ -503,26 +503,26 @@ export default function Navbar({
               </div>
             </button>
 
-            {/* Desktop Navbar Collapse / Expand Arrow Button */}
+            {/* Desktop Navbar Collapse / Expand Arrow Button (Left-to-Right) */}
             <button
               type="button"
               onClick={toggleDesktopNav}
-              className="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 [html.light_&]:bg-slate-100 [html.light_&]:border-slate-300/80 [html.light_&]:text-slate-700 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold shadow-sm shrink-0 ml-1"
-              title={isDesktopNavOpen ? 'Hide Nav Tools (Collapse)' : 'Show Nav Tools (Expand)'}
+              className="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 [html.light_&]:bg-slate-100 [html.light_&]:border-slate-300/80 [html.light_&]:text-slate-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-sm shrink-0 ml-1 group/btn"
+              title={isDesktopNavOpen ? 'Collapse Nav Tools (<)' : 'Expand Nav Tools (>)'}
             >
               {isDesktopNavOpen ? (
-                <ChevronLeft className="w-4 h-4 text-cyan-400 hover:scale-110 transition-transform" />
+                <ChevronLeft className="w-4 h-4 text-cyan-400 group-hover/btn:scale-110 transition-transform duration-300" />
               ) : (
-                <ChevronRight className="w-4 h-4 text-violet-400 hover:scale-110 transition-transform" />
+                <ChevronRight className="w-4 h-4 text-violet-400 group-hover/btn:scale-110 transition-transform duration-300 animate-pulse" />
               )}
             </button>
           </div>
 
-          {/* Collapsible Desktop Nav Tools Container */}
-          <div className={`flex items-center justify-end gap-3 flex-1 overflow-hidden transition-all duration-500 ease-in-out ${
+          {/* Collapsible Desktop Nav Tools Container - Smooth Left to Right Reveal */}
+          <div className={`flex items-center justify-end gap-3 flex-1 overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] origin-left ${
             isDesktopNavOpen 
-              ? 'max-w-[1200px] opacity-100 scale-100' 
-              : 'max-w-0 opacity-0 scale-95 pointer-events-none'
+              ? 'max-w-[1200px] opacity-100 translate-x-0' 
+              : 'max-w-0 opacity-0 -translate-x-8 pointer-events-none'
           }`}>
           {/* Center: Search Bar with Expand on Focus */}
           <div id="tour-search-bar" className="relative w-28 lg:w-40 xl:w-48 focus-within:w-44 lg:focus-within:w-56 shrink-0 transition-all duration-300 group">
