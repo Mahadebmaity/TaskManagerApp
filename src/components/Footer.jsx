@@ -221,35 +221,20 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
                   {footerConfig.developerInitials ? footerConfig.developerInitials.charAt(0).toUpperCase() : 'M'}
                 </div>
                 <div>
-                  <div className="flex items-center justify-center sm:justify-start gap-1.5">
-                    <span className="text-xs font-bold text-slate-200">{footerConfig.developerName}</span>
-                    {isAdmin && (
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
-                        Admin / Creator
-                      </span>
-                    )}
-                  </div>
+                  <h4 className="text-xs font-bold text-slate-200">{footerConfig.developerName}</h4>
                   <p className="text-[11px] text-slate-400">{footerConfig.developerRole}</p>
                 </div>
               </div>
 
-              {/* Developer Follow Button */}
-              {footerConfig.showFollowButton !== false && (
-                <div className="flex items-center justify-center gap-1.5 shrink-0 w-full sm:w-auto">
-                  <a
-                    href={footerConfig.followButtonUrl || footerConfig.links?.find((l) => l.platform === 'linkedin' || l.platform === 'github')?.url || 'https://www.linkedin.com/in/mahadeb-maity/'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => soundFx.playPop()}
-                    className="flex-1 sm:flex-initial px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600/20 to-indigo-600/20 hover:from-violet-600/35 hover:to-indigo-600/35 text-violet-300 hover:text-white border border-violet-500/30 hover:border-violet-400 transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
-                    title={footerConfig.followButtonText || "View Developer Portfolio & Profile"}
-                  >
-                    <span>{footerConfig.followButtonText || 'Follow developer'}</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-violet-400" />
-                  </a>
+              {/* Action Side: Admin Badge + Edit Button (for Admin) OR Follow Developer Button (for normal users) */}
+              <div className="flex items-center justify-center sm:justify-end gap-2 shrink-0 w-full sm:w-auto">
+                {isAdmin ? (
+                  <>
+                    <span className="px-2.5 py-1 rounded-xl bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold text-xs flex items-center gap-1 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Admin / Creator
+                    </span>
 
-                  {/* Admin Manage button - ONLY visible if logged in as Admin */}
-                  {isAdmin && (
                     <button
                       type="button"
                       onClick={() => {
@@ -257,14 +242,28 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
                         else setIsAdminOpen(true);
                         soundFx.playPop();
                       }}
-                      className="p-1.5 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 border border-violet-500/30 hover:border-violet-400 transition-all text-xs flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
+                      className="p-1.5 rounded-xl bg-violet-600/20 hover:bg-violet-600/35 text-violet-300 border border-violet-500/30 hover:border-violet-400 transition-all text-xs flex items-center justify-center cursor-pointer shadow-sm active:scale-95"
                       title="Admin: Edit Developer Profile & Social Links"
                     >
-                      <Edit3 className="w-3.5 h-3.5" />
+                      <Edit3 className="w-4 h-4" />
                     </button>
-                  )}
-                </div>
-              )}
+                  </>
+                ) : (
+                  footerConfig.showFollowButton !== false && (
+                    <a
+                      href={footerConfig.followButtonUrl || footerConfig.links?.find((l) => l.platform === 'linkedin' || l.platform === 'github')?.url || 'https://www.linkedin.com/in/mahadeb-maity/'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => soundFx.playPop()}
+                      className="flex-1 sm:flex-initial px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600/20 to-indigo-600/20 hover:from-violet-600/35 hover:to-indigo-600/35 text-violet-300 hover:text-white border border-violet-500/30 hover:border-violet-400 transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+                      title={footerConfig.followButtonText || "View Developer Portfolio & Profile"}
+                    >
+                      <span>{footerConfig.followButtonText || 'Follow developer'}</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-violet-400" />
+                    </a>
+                  )
+                )}
+              </div>
             </div>
           </div>
 
