@@ -312,3 +312,19 @@ html.light input:-webkit-autofill:active {
 .animate-timer-shimmer {
   animation: timer-shimmer 3s infinite ease-in-out;
 }
+
+/* Smooth mobile navbar expansion & reveal */
+@keyframes nav-reveal-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-nav-reveal {
+  animation: nav-reveal-down 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

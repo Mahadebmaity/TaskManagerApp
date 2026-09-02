@@ -195,16 +195,16 @@ export default function Navbar({
             </button>
           </div>
 
-          {/* Lines 2, 3, 4: Collapsible on scroll (hidden when scrolled, visible at top) */}
-          <div className={`flex flex-col gap-2 w-full transition-all duration-300 ease-in-out ${
+          {/* Lines 2, 3, 4: Collapsible on scroll (hidden when scrolled, visible at top with smooth reveal effect) */}
+          <div className={`flex flex-col gap-2 w-full transition-all duration-350 ease-out ${
             isScrolled 
-              ? 'max-h-0 opacity-0 pointer-events-none scale-y-95 origin-top -my-1 overflow-hidden' 
+              ? 'max-h-0 opacity-0 pointer-events-none -translate-y-2 overflow-hidden' 
               : isUserMenuOpen
-              ? 'max-h-[300px] opacity-100 scale-y-100 origin-top overflow-visible relative z-50'
-              : 'max-h-[300px] opacity-100 scale-y-100 origin-top overflow-visible'
+              ? 'max-h-[350px] opacity-100 translate-y-0 overflow-visible relative z-50 animate-nav-reveal'
+              : 'max-h-[350px] opacity-100 translate-y-0 overflow-visible animate-nav-reveal'
           }`}>
             {/* LINE 2: Actions Bar distributed evenly across full width */}
-            <div className="flex items-center justify-between w-full p-1 rounded-2xl bg-slate-900/60 [html.light_&]:bg-slate-100/90 border border-white/10 [html.light_&]:border-slate-200/80 shadow-sm gap-1">
+            <div className="flex items-center justify-between w-full p-1 rounded-2xl bg-slate-900/60 [html.light_&]:bg-slate-100/90 border border-white/10 [html.light_&]:border-slate-200/80 shadow-sm gap-1 transition-all duration-300">
               {/* Focus Timer Button - Flex growing with timer status */}
               <button
                 type="button"
