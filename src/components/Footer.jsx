@@ -56,7 +56,7 @@ const ICON_MAP = {
 const DEFAULT_FOOTER_CONFIG = {
   developerName: 'Mahadeb Maity',
   developerRole: 'Full-Stack Web Developer & UI Engineer',
-  developerInitials: 'MM',
+  developerInitials: 'M',
   developerBio: 'A high-performance productivity ecosystem combining natural language AI parsing, intuitive Kanban drag-and-drop workflows, and Zen Pomodoro timers to empower deep focus.',
   followButtonText: 'Follow developer',
   followButtonUrl: 'https://www.linkedin.com/in/mahadeb-maity/',
@@ -215,13 +215,13 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
             </p>
 
             {/* Developer Card with Connect Links */}
-            <div id="tour-footer-connect" className="p-3.5 rounded-2xl bg-slate-900/80 border border-white/10 flex items-center justify-between gap-3 max-w-md shadow-lg group">
+            <div id="tour-footer-connect" className="p-3.5 rounded-2xl bg-slate-900/80 border border-white/10 flex flex-col sm:flex-row items-center sm:justify-between gap-3 max-w-md shadow-lg group text-center sm:text-left">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center font-black text-white text-sm shadow-md ring-1 ring-white/20">
-                  {footerConfig.developerInitials || 'MM'}
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center font-black text-white text-base shadow-md ring-1 ring-white/20 shrink-0">
+                  {footerConfig.developerInitials ? footerConfig.developerInitials.charAt(0).toUpperCase() : 'M'}
                 </div>
                 <div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center justify-center sm:justify-start gap-1.5">
                     <span className="text-xs font-bold text-slate-200">{footerConfig.developerName}</span>
                     {isAdmin && (
                       <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
@@ -235,13 +235,13 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
 
               {/* Developer Follow Button */}
               {footerConfig.showFollowButton !== false && (
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center justify-center gap-1.5 shrink-0 w-full sm:w-auto">
                   <a
                     href={footerConfig.followButtonUrl || footerConfig.links?.find((l) => l.platform === 'linkedin' || l.platform === 'github')?.url || 'https://www.linkedin.com/in/mahadeb-maity/'}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => soundFx.playPop()}
-                    className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600/20 to-indigo-600/20 hover:from-violet-600/35 hover:to-indigo-600/35 text-violet-300 hover:text-white border border-violet-500/30 hover:border-violet-400 transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+                    className="flex-1 sm:flex-initial px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600/20 to-indigo-600/20 hover:from-violet-600/35 hover:to-indigo-600/35 text-violet-300 hover:text-white border border-violet-500/30 hover:border-violet-400 transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-sm hover:scale-105 active:scale-95"
                     title={footerConfig.followButtonText || "View Developer Portfolio & Profile"}
                   >
                     <span>{footerConfig.followButtonText || 'Follow developer'}</span>
@@ -268,15 +268,15 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
             </div>
           </div>
 
-          {/* Column 2: Connect & Social Links (Span 3) - Compact Inline Badges */}
-          <div className="md:col-span-3 space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+          {/* Column 2: Connect & Social Links (Span 3) - Centered on Mobile */}
+          <div className="md:col-span-3 space-y-3 flex flex-col items-center md:items-start text-center md:text-left w-full">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center justify-center md:justify-start gap-1.5 w-full">
               <Zap className="w-3.5 h-3.5 text-amber-400" />
               <span>{footerConfig.socialSectionTitle || 'Connect With Developer'}</span>
             </h4>
 
-            {/* Compact inline chips: icon + name only */}
-            <div className="flex flex-wrap gap-2">
+            {/* Compact inline chips: icon + name only, centered on mobile */}
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 w-full">
               {(footerConfig.links || []).map((social) => {
                 const Icon = ICON_MAP[social.platform] || Globe;
                 return (
@@ -297,14 +297,14 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
             </div>
           </div>
 
-          {/* Column 3: Tech Stack & Tour Action (Span 3) */}
-          <div className="md:col-span-3 space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+          {/* Column 3: Tech Stack & Tour Action (Span 3) - Centered on Mobile */}
+          <div className="md:col-span-3 space-y-3 flex flex-col items-center md:items-start text-center md:text-left w-full">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center justify-center md:justify-start gap-1.5 w-full">
               <Code2 className="w-3.5 h-3.5 text-cyan-400" />
               <span>{footerConfig.techStackTitle || 'Built With Modern Stack'}</span>
             </h4>
 
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5 w-full">
               {(footerConfig.techStack || []).map((tech) => (
                 <span
                   key={tech}
@@ -316,7 +316,7 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
             </div>
 
             {footerConfig.showTourButton !== false && (
-              <div className="pt-2 flex flex-col gap-2">
+              <div className="pt-2 flex flex-col items-center md:items-stretch w-full max-w-xs md:max-w-none">
                 <button
                   type="button"
                   onClick={() => {

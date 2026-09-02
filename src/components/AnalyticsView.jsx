@@ -116,8 +116,10 @@ export default function AnalyticsView({ tasks = [], userXP = 0, streakDays = 1, 
           </div>
           <div>
             <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Productivity Streak</span>
-            <h3 className="text-xl sm:text-2xl font-black text-white leading-tight">{streakDays} Days</h3>
-            <p className="text-[10px] sm:text-[11px] text-amber-400 font-bold">Keep the fire burning!</p>
+            <h3 className="text-xl sm:text-2xl font-black text-white leading-tight">{streakDays} {streakDays === 1 ? 'Day' : 'Days'}</h3>
+            <p className="text-[10px] sm:text-[11px] text-amber-400 font-bold">
+              {streakDays > 0 ? 'Keep the fire burning!' : 'Complete a task to ignite streak!'}
+            </p>
           </div>
         </div>
 
@@ -129,47 +131,56 @@ export default function AnalyticsView({ tasks = [], userXP = 0, streakDays = 1, 
           <div>
             <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Deep Work Time</span>
             <h3 className="text-xl sm:text-2xl font-black text-white leading-tight">{focusMinutesToday} mins</h3>
-            <p className="text-[10px] sm:text-[11px] text-emerald-400 font-bold">Logged in Zen Pomodoro</p>
+            <p className="text-[10px] sm:text-[11px] text-emerald-400 font-bold">
+              {focusMinutesToday > 0 ? 'Logged in Zen Pomodoro' : 'Start Focus Timer to track time'}
+            </p>
           </div>
         </div>
 
       </div>
 
-      {/* AI Smart Productivity Advice Card */}
-      <div className="glass-panel rounded-3xl p-4 sm:p-5 border border-white/15 bg-gradient-to-r from-violet-950/40 via-slate-900/80 to-indigo-950/40 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-start gap-3.5">
-          <div className="p-3 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md shrink-0 mt-0.5">
-            <Brain className="w-5 h-5" />
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                AI Productivity Coach
-              </span>
-              <h4 className="text-sm sm:text-base font-bold text-white">{advice.title}</h4>
+      {/* AI Smart Productivity Advice Card - Restructured layout: Icon & Name top, heading title below, then reason & advice */}
+      <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-white/15 bg-gradient-to-r from-violet-950/40 via-slate-900/80 to-indigo-950/40 shadow-xl space-y-3">
+        {/* Top: Brain Logo + AI Productivity Coach Name Badge */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 sm:p-2.5 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md shrink-0">
+              <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-violet-200" />
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">{advice.text}</p>
+            <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
+              AI Productivity Coach
+            </span>
+          </div>
+
+          <div className="text-right">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">Workload Remaining</span>
+            <span className="text-xs sm:text-sm font-black font-mono text-cyan-400">~{remainingEstimatedMinutes} mins</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0 self-end md:self-center">
-          <div className="text-right">
-            <span className="text-[10px] uppercase font-bold text-slate-500 block">Workload Remaining</span>
-            <span className="text-sm font-black font-mono text-cyan-400">~{remainingEstimatedMinutes} mins</span>
-          </div>
-        </div>
+        {/* Middle: Heading Name */}
+        <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+          {advice.title}
+        </h4>
+
+        {/* Bottom: Reason & Smart Actionable Guidance */}
+        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
+          {advice.text}
+        </p>
       </div>
 
       {/* Eisenhower Matrix & Workload Urgency Quadrants */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between px-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4 px-1">
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-violet-400" />
-            <h3 className="text-sm font-black uppercase tracking-wider text-slate-200">
+            <TrendingUp className="w-4 h-4 text-violet-400 shrink-0" />
+            <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-200 whitespace-nowrap overflow-hidden text-ellipsis">
               Eisenhower Priority Matrix & Workload Health
             </h3>
           </div>
-          <span className="text-xs text-slate-400">{totalCount} Total Registered Tasks</span>
+          <span className="text-[11px] sm:text-xs text-slate-400 font-medium pl-6 sm:pl-0">
+            {totalCount} Total Registered Tasks
+          </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -253,28 +264,44 @@ export default function AnalyticsView({ tasks = [], userXP = 0, streakDays = 1, 
           <div className="flex flex-col sm:flex-row items-center justify-around gap-6 py-4">
             {/* Circular Velocity Gauge */}
             <div className="relative w-36 h-36 flex items-center justify-center shrink-0">
-              <svg className="w-full h-full transform -rotate-90">
-                <circle cx="50%" cy="50%" r="42%" stroke="currentColor" strokeWidth="10" className="text-slate-900" fill="transparent" />
-                <circle
-                  cx="50%"
-                  cy="50%"
-                  r="42%"
-                  stroke="url(#gradient-analytics)"
-                  strokeWidth="10"
-                  strokeDasharray="264"
-                  strokeDashoffset={264 - (264 * completionRate) / 100}
-                  strokeLinecap="round"
-                  fill="transparent"
-                  className="transition-all duration-1000 ease-out"
-                />
-                <defs>
-                  <linearGradient id="gradient-analytics" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#8b5cf6" />
-                    <stop offset="50%" stopColor="#6366f1" />
-                    <stop offset="100%" stopColor="#06b6d4" />
-                  </linearGradient>
-                </defs>
-              </svg>
+              {(() => {
+                const radius = 58;
+                const circumference = 2 * Math.PI * radius; // ~364.424
+                const strokeOffset = circumference - (circumference * Math.min(100, Math.max(0, completionRate))) / 100;
+
+                return (
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 144 144">
+                    <circle 
+                      cx="72" 
+                      cy="72" 
+                      r={radius} 
+                      stroke="currentColor" 
+                      strokeWidth="10" 
+                      className="text-slate-900/90" 
+                      fill="transparent" 
+                    />
+                    <circle
+                      cx="72"
+                      cy="72"
+                      r={radius}
+                      stroke="url(#gradient-analytics)"
+                      strokeWidth="10"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeOffset}
+                      strokeLinecap="round"
+                      fill="transparent"
+                      className="transition-all duration-1000 ease-out"
+                    />
+                    <defs>
+                      <linearGradient id="gradient-analytics" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#8b5cf6" />
+                        <stop offset="50%" stopColor="#6366f1" />
+                        <stop offset="100%" stopColor="#06b6d4" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                );
+              })()}
               <div className="absolute flex flex-col items-center">
                 <span className="text-3xl font-black text-white">{completionRate}%</span>
                 <span className="text-[10px] text-slate-400 uppercase font-extrabold tracking-wider">Velocity</span>

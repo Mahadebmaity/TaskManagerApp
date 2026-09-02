@@ -178,11 +178,11 @@ export default function ListView({ tasks, allTasks = [], onUpdateStatus, onReord
                 onDragOver={(e) => handleDragOver(e, task.id)}
                 onDrop={(e) => handleDrop(e, task.id)}
                 onClick={() => onSelectTask(task)}
-                className={`glass-card rounded-xl p-3 sm:p-4 border flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 cursor-grab active:cursor-grabbing group transition-all select-none ${
+                className={`glass-card rounded-xl p-3 sm:p-4 border flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 cursor-grab active:cursor-grabbing group transition-[background-color,border-color,box-shadow,opacity] duration-200 select-none ${
                   isDraggingThis
                     ? 'opacity-30 border-dashed border-violet-400 scale-[0.98]'
                     : isDragOverThis
-                    ? 'border-violet-400 bg-violet-950/30 ring-2 ring-violet-500/50 scale-[1.01]'
+                    ? 'border-violet-400 bg-violet-950/30 ring-2 ring-violet-500/50'
                     : 'border-white/10 hover:border-violet-500/40'
                 }`}
               >

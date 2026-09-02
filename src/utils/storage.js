@@ -89,20 +89,48 @@ export const INITIAL_SAMPLE_TASKS = [
   }
 ];
 
-export function loadState() {
+export function getUserStorageKey(user) {
+  if (!user) return 'your_task_app_state_guest';
+  const rawId = typeof user === 'string' ? user : (user.id || user.name || 'guest');
+  const cleanId = rawId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+  return `your_task_app_state_user_${cleanId}`;
+}
+
+export function getUserHistoryKey(user) {
+  if (!user) return 'taskmanager_deleted_history_guest';
+  const rawId = typeof user === 'string' ? user : (user.id || user.name || 'guest');
+  const cleanId = rawId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+  return `taskmanager_deleted_history_${cleanId}`;
+}
+
+export function loadState(user) {
   try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) return { tasks: INITIAL_SAMPLE_TASKS, userXP: 320, streakDays: 4, focusMinutesToday: 65 };
-    return JSON.parse(data);
+    const key = getUserStorageKey(user);
+    const data = localStorage.getItem(key);
+    if (data) {
+      return JSON.parse(data);
+    }
+
+    // If user is brand new and has no saved state yet, start with clean empty workspace
+    if (user && user.name) {
+      return { tasks: [], userXP: 0, streakDays: 0, focusMinutesToday: 0 };
+    }
+
+    // Default seed fallback for guests
+    const legacyData = localStorage.getItem(STORAGE_KEY);
+    if (legacyData) return JSON.parse(legacyData);
+
+    return { tasks: [], userXP: 0, streakDays: 0, focusMinutesToday: 0 };
   } catch (e) {
     console.error('Failed to load state', e);
-    return { tasks: INITIAL_SAMPLE_TASKS, userXP: 320, streakDays: 4, focusMinutesToday: 65 };
+    return { tasks: [], userXP: 0, streakDays: 0, focusMinutesToday: 0 };
   }
 }
 
-export function saveState(state) {
+export function saveState(state, user) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const key = getUserStorageKey(user);
+    localStorage.setItem(key, JSON.stringify(state));
   } catch (e) {
     console.error('Failed to save state', e);
   }

@@ -264,17 +264,21 @@ export default function FocusTimer({
 
             {/* Informative Notice if another mode is actively running */}
             {pomodoro?.runningMode && pomodoro.runningMode !== mode && (
-              <div className="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-semibold flex items-center justify-between gap-2 animate-fadeIn">
+              <div className="px-3 py-2 rounded-xl bg-amber-500/15 border border-amber-500/35 text-amber-300 text-[11px] font-semibold flex items-center justify-between gap-2 animate-fadeIn text-left">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
                   <span>
-                    {pomodoro.runningMode === 'focus' ? 'Focus' : 'Break'} is running (
-                    {String(Math.floor((pomodoro.sessions?.[pomodoro.runningMode]?.timeLeft || 0) / 60)).padStart(2, '0')}:
-                    {String((pomodoro.sessions?.[pomodoro.runningMode]?.timeLeft || 0) % 60).padStart(2, '0')}
-                    )
+                    {pomodoro.runningMode === 'focus' 
+                      ? 'Focus Sprint' 
+                      : pomodoro.runningMode === 'shortBreak' 
+                      ? 'Short Break' 
+                      : 'Long Break'} is running ({String(Math.floor((pomodoro.sessions?.[pomodoro.runningMode]?.timeLeft || 0) / 60)).padStart(2, '0')}:
+                    {String((pomodoro.sessions?.[pomodoro.runningMode]?.timeLeft || 0) % 60).padStart(2, '0')})
                   </span>
                 </span>
-                <span className="text-[10px] opacity-80 hidden sm:inline">Starting this will pause {pomodoro.runningMode}</span>
+                <span className="text-[10px] text-amber-200/90 font-medium hidden sm:inline">
+                  Pause it to start this {mode.replace(/([A-Z])/, ' $1').toLowerCase()}
+                </span>
               </div>
             )}
 
@@ -431,16 +435,34 @@ export default function FocusTimer({
                   <RotateCcw className="w-4 h-4" />
                 </button>
 
-                <button
-                  onClick={() => {
-                    soundFx.init();
-                    onToggleTimer();
-                  }}
-                  className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-xl shadow-emerald-500/20 transition-all transform active:scale-95 cursor-pointer"
-                >
-                  {isRunning ? <Pause className="w-4 h-4 fill-slate-950" /> : <Play className="w-4 h-4 fill-slate-950" />}
-                  <span>{isRunning ? 'PAUSE' : 'START'}</span>
-                </button>
+                {(() => {
+                  const isOtherModeRunning = !!pomodoro?.runningMode && pomodoro.runningMode !== mode;
+
+                  return (
+                    <button
+                      type="button"
+                      disabled={isOtherModeRunning}
+                      onClick={() => {
+                        if (isOtherModeRunning) return;
+                        soundFx.init();
+                        onToggleTimer();
+                      }}
+                      className={`px-6 py-2.5 rounded-2xl font-black text-xs sm:text-sm flex items-center gap-2 shadow-xl transition-all transform ${
+                        isOtherModeRunning
+                          ? 'bg-slate-800 text-slate-500 border border-white/10 cursor-not-allowed opacity-50'
+                          : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-emerald-500/20 active:scale-95 cursor-pointer'
+                      }`}
+                      title={
+                        isOtherModeRunning
+                          ? `${pomodoro.runningMode === 'focus' ? 'Focus' : pomodoro.runningMode === 'shortBreak' ? 'Short Break' : 'Long Break'} is already running. Pause it first.`
+                          : isRunning ? 'Pause Timer' : 'Start Timer'
+                      }
+                    >
+                      {isRunning ? <Pause className="w-4 h-4 fill-slate-950" /> : <Play className="w-4 h-4 fill-current" />}
+                      <span>{isRunning ? 'PAUSE' : 'START'}</span>
+                    </button>
+                  );
+                })()}
               </div>
             </div>
           </>

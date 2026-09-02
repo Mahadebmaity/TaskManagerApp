@@ -70,6 +70,11 @@ export const subscribeWorkspace = (workspaceId = 'default_workspace', onData) =>
     const unsubscribe = onSnapshot(
       docRef,
       (docSnap) => {
+        // Ignore echo snapshots from local client's pending writes to prevent UI blink/flicker
+        if (docSnap.metadata?.hasPendingWrites) {
+          return;
+        }
+
         if (docSnap.exists()) {
           const cloudData = docSnap.data();
           if (cloudData && typeof onData === 'function') {

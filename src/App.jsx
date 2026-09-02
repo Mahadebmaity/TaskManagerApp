@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import UserWelcomeModal from './components/UserWelcomeModal';
 import AdminCMSModal from './components/AdminCMSModal';
 
-import { loadState, saveState } from './utils/storage';
+import { loadState, saveState, getUserHistoryKey } from './utils/storage';
 import { isFirebaseConfigured, syncWorkspaceToCloud, subscribeWorkspace } from './utils/firebase';
 import { triggerCompletionConfetti, soundFx } from './utils/effects';
 import { Bell, X, Coffee, Sparkles } from 'lucide-react';
@@ -24,32 +24,7 @@ const DEFAULT_DURATIONS = {
 };
 
 export default function App() {
-  const [appState, setAppState] = useState(loadState);
-  const [currentView, setCurrentView] = useState('list'); // 'kanban' | 'list' | 'analytics' | 'history'
-  const [searchQuery, setSearchQuery] = useState('');
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [isFocusTimerOpen, setIsFocusTimerOpen] = useState(false);
-
-  // Deleted Tasks History Archive State
-  const [deletedTasks, setDeletedTasks] = useState(() => {
-    try {
-      const saved = localStorage.getItem('taskmanager_deleted_history');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('taskmanager_deleted_history', JSON.stringify(deletedTasks));
-    } catch (e) {
-      console.warn('Save deleted history error', e);
-    }
-  }, [deletedTasks]);
-
-  // User Profile & Registry State (for Admin tracking)
+  // User Profile & Registry State (for Admin tracking) - loaded first to key user workspaces
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('taskmanager_user_profile');
@@ -58,6 +33,80 @@ export default function App() {
       return null;
     }
   });
+
+  const [appState, setAppState] = useState(() => loadState(currentUser));
+  const [currentView, setCurrentView] = useState('list'); // 'kanban' | 'list' | 'analytics' | 'history'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isFocusTimerOpen, setIsFocusTimerOpen] = useState(false);
+
+  // Light / Dark Theme State
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('taskmanager_theme') || 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('taskmanager_theme', theme);
+      if (theme === 'light') {
+        document.documentElement.classList.add('light');
+      } else {
+        document.documentElement.classList.remove('light');
+      }
+    } catch (e) {
+      console.warn('Theme storage error', e);
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    soundFx.playPop();
+  };
+
+  const handleResetHome = () => {
+    setCurrentView('kanban');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    soundFx.playPop();
+  };
+
+  // Deleted Tasks History Archive State (isolated per user)
+  const [deletedTasks, setDeletedTasks] = useState(() => {
+    try {
+      const key = getUserHistoryKey(currentUser);
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      const key = getUserHistoryKey(currentUser);
+      localStorage.setItem(key, JSON.stringify(deletedTasks));
+    } catch (e) {
+      console.warn('Save deleted history error', e);
+    }
+  }, [deletedTasks, currentUser]);
+
+  // When user switches or logs in, load that user's specific workspace and deleted history
+  useEffect(() => {
+    const userWorkspace = loadState(currentUser);
+    setAppState(userWorkspace);
+
+    try {
+      const key = getUserHistoryKey(currentUser);
+      const savedHistory = localStorage.getItem(key);
+      setDeletedTasks(savedHistory ? JSON.parse(savedHistory) : []);
+    } catch (e) {
+      setDeletedTasks([]);
+    }
+  }, [currentUser?.name, currentUser?.id]);
 
   const [registeredUsers, setRegisteredUsers] = useState(() => {
     try {
@@ -256,7 +305,7 @@ export default function App() {
 
   // Sync state changes to LocalStorage and Firebase Cloud
   useEffect(() => {
-    saveState(appState);
+    saveState(appState, currentUser);
     if (isFirebaseConfigured()) {
       const workspaceKey = currentUser?.name ? currentUser.name : 'shared_workspace';
       syncWorkspaceToCloud(workspaceKey, appState);
@@ -726,6 +775,9 @@ export default function App() {
         isCloudConnected={isCloudConnected}
         onLogout={handleLogoutUser}
         onSwitchUser={handleSwitchUser}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onResetHome={handleResetHome}
       />
 
       {/* Main Content Area */}
