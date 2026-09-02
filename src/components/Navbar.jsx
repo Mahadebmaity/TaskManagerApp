@@ -289,6 +289,7 @@ export default function Navbar({
               <div className="flex items-center justify-between w-full py-1 px-0.5 gap-1 transition-all duration-300">
               {/* Focus Timer Button */}
               <button
+                id="tour-focus-timer-mobile"
                 type="button"
                 onClick={onOpenFocusTimer}
                 className={`flex-1 py-1.5 px-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-xs font-bold cursor-pointer ${
@@ -346,6 +347,7 @@ export default function Navbar({
 
               {/* Speaker / Audio Toggle */}
               <button
+                id="tour-sound-toggle-mobile"
                 type="button"
                 onClick={() => setSoundEnabled(!soundEnabled)}
                 className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-white hover:bg-white/5 [html.light_&]:hover:bg-slate-200/50 transition-colors flex items-center justify-center cursor-pointer"
@@ -365,7 +367,7 @@ export default function Navbar({
               </button>
 
               {/* Task Completed Stats Badge */}
-              <div className="flex-1 flex items-center justify-center" title="Completed / Total Tasks">
+              <div id="tour-stats-badge-mobile" className="flex-1 flex items-center justify-center" title="Completed / Total Tasks">
                 <div className="flex items-center gap-0.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 [html.light_&]:bg-emerald-500/15 px-2 py-1 rounded-lg border border-emerald-500/20 whitespace-nowrap">
                   <span className="text-[10px] font-mono">{taskStats.completed}/{taskStats.total}</span>
                 </div>
@@ -374,7 +376,7 @@ export default function Navbar({
           </div>
 
           {/* LINE 3: Search Bar */}
-          <div className="relative w-full">
+          <div id="tour-search-bar-mobile" className="relative w-full">
             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 transition-colors pointer-events-none ${
               searchQuery ? 'text-cyan-400' : 'text-slate-400'
             }`} />
@@ -404,6 +406,7 @@ export default function Navbar({
 
           {/* LINE 4: View Switcher (Kanban, List, Analytics, History) in single row */}
           <div 
+            id="tour-view-switcher-mobile"
             className="no-scrollbar flex items-center p-0.5 bg-slate-950/80 rounded-2xl border border-white/15 w-full justify-between overflow-x-auto shadow-inner gap-0.5"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >

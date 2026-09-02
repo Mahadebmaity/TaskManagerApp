@@ -291,6 +291,28 @@ export default function OnboardingTour({ isOpen, onClose }) {
       return;
     }
 
+    const getTargetElement = (selector) => {
+      if (!selector) return null;
+      // Try exact selector first, then mobile fallback selector if present
+      let el = document.querySelector(selector);
+      if (!el && selector.startsWith('#tour-')) {
+        el = document.querySelector(`${selector}-mobile`);
+      }
+      if (el) {
+        const r = el.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) return el;
+      }
+      // If primary selector wasn't visible, try mobile selector if available
+      if (selector.startsWith('#tour-')) {
+        const mobEl = document.querySelector(`${selector}-mobile`);
+        if (mobEl) {
+          const r = mobEl.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) return mobEl;
+        }
+      }
+      return el;
+    };
+
     const calculatePosition = () => {
       const isNavbarItem = [
         '#tour-view-switcher',
@@ -305,8 +327,7 @@ export default function OnboardingTour({ isOpen, onClose }) {
         window.dispatchEvent(new CustomEvent('expand-navbar-for-tour'));
       }
 
-      // Check element after a slight microtick so DOM / navbar expansion is applied
-      const el = document.querySelector(currentStep.targetSelector);
+      const el = getTargetElement(currentStep.targetSelector);
       if (!el) {
         setTargetRect(null);
         return;
@@ -326,7 +347,7 @@ export default function OnboardingTour({ isOpen, onClose }) {
       }
       
       const updateRect = () => {
-        const activeEl = document.querySelector(currentStep.targetSelector);
+        const activeEl = getTargetElement(currentStep.targetSelector);
         if (!activeEl) {
           setTargetRect(null);
           return;
