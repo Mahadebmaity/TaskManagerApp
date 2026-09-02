@@ -114,17 +114,28 @@ export function loadState(user) {
     if (data) {
       const parsed = JSON.parse(data);
       if (Array.isArray(parsed.tasks)) {
+        // If state was previously created with legacy placeholder values (320 XP / 4 streak / 65 mins), reset to 0 so users start from scratch
+        if (parsed.userXP === 320 && parsed.streakDays === 4 && parsed.focusMinutesToday === 65) {
+          parsed.userXP = 0;
+          parsed.streakDays = 0;
+          parsed.focusMinutesToday = 0;
+          try {
+            localStorage.setItem(key, JSON.stringify(parsed));
+          } catch (e) {
+            console.warn('Legacy reset error', e);
+          }
+        }
         return parsed;
       }
     }
 
-    // If user is brand new or has no saved state yet, initialize with a fresh copy of demo tasks
+    // If user is brand new or has no saved state yet, start metrics strictly from scratch!
     const freshTasks = getFreshSampleTasks();
     const initialState = {
       tasks: freshTasks,
-      userXP: 320,
-      streakDays: 4,
-      focusMinutesToday: 65
+      userXP: 0,
+      streakDays: 0,
+      focusMinutesToday: 0
     };
 
     // Save this fresh state under the user's dedicated key so it's isolated
@@ -137,7 +148,7 @@ export function loadState(user) {
     return initialState;
   } catch (e) {
     console.error('Failed to load state', e);
-    return { tasks: getFreshSampleTasks(), userXP: 320, streakDays: 4, focusMinutesToday: 65 };
+    return { tasks: getFreshSampleTasks(), userXP: 0, streakDays: 0, focusMinutesToday: 0 };
   }
 }
 

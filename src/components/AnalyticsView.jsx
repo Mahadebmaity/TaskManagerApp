@@ -17,7 +17,7 @@ import {
   Award
 } from 'lucide-react';
 
-export default function AnalyticsView({ tasks = [], userXP = 0, streakDays = 1, focusMinutesToday = 0 }) {
+export default function AnalyticsView({ tasks = [], userXP = 0, streakDays = 0, focusMinutesToday = 0 }) {
   const completedTasks = tasks.filter((t) => t.status === 'completed');
   const inProgressTasks = tasks.filter((t) => t.status === 'in_progress');
   const todoTasks = tasks.filter((t) => t.status === 'todo');
