@@ -203,56 +203,57 @@ export default function Navbar({
               ? 'max-h-[300px] opacity-100 scale-y-100 origin-top overflow-visible relative z-50'
               : 'max-h-[300px] opacity-100 scale-y-100 origin-top overflow-visible'
           }`}>
-            {/* LINE 2: Actions Bar with borderless sleek icons */}
-            <div className="flex items-center justify-between gap-1 w-full pt-0.5 px-0.5">
-            <div className="flex items-center gap-1">
-              {/* Focus Timer Button */}
+            {/* LINE 2: Actions Bar distributed evenly across full width */}
+            <div className="flex items-center justify-between w-full p-1 rounded-2xl bg-slate-900/60 [html.light_&]:bg-slate-100/90 border border-white/10 [html.light_&]:border-slate-200/80 shadow-sm gap-1">
+              {/* Focus Timer Button - Flex growing with timer status */}
               <button
+                type="button"
                 onClick={onOpenFocusTimer}
-                className={`px-2 py-1 rounded-lg transition-all flex items-center gap-1 text-xs font-bold ${
+                className={`flex-1 py-1.5 px-2 rounded-xl transition-all flex items-center justify-center gap-1.5 text-xs font-bold cursor-pointer ${
                   isAnyRunning
-                    ? 'bg-emerald-950/80 text-emerald-300 animate-live-timer'
+                    ? 'bg-emerald-950/80 text-emerald-300 animate-live-timer shadow-sm'
                     : activeSession?.timeLeft < activeSession?.totalDuration
                     ? 'bg-amber-500/15 text-amber-300'
-                    : 'text-emerald-400 hover:bg-emerald-500/15'
+                    : 'text-emerald-400 hover:bg-emerald-500/10'
                 }`}
                 title="Focus Timer"
               >
                 <Timer className="w-4 h-4 text-emerald-400 shrink-0" />
-                {isAnyRunning || activeSession?.timeLeft < activeSession?.totalDuration ? (
-                  <span className="font-mono text-[11px]">
-                    {String(Math.floor(activeSession.timeLeft / 60)).padStart(2, '0')}:
-                    {String(activeSession.timeLeft % 60).padStart(2, '0')}
-                  </span>
-                ) : null}
+                <span className="font-mono text-[11px] whitespace-nowrap">
+                  {isAnyRunning || activeSession?.timeLeft < activeSession?.totalDuration
+                    ? `${String(Math.floor(activeSession.timeLeft / 60)).padStart(2, '0')}:${String(activeSession.timeLeft % 60).padStart(2, '0')}`
+                    : 'Timer'}
+                </span>
               </button>
+
+              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
 
               {/* Light & Dark Mode Toggle Button */}
               <button
                 type="button"
                 onClick={onToggleTheme}
-                className="p-1.5 rounded-lg text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors cursor-pointer"
+                className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-amber-400 hover:bg-white/5 [html.light_&]:hover:bg-white/60 transition-colors flex items-center justify-center cursor-pointer"
                 title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               >
                 {theme === 'dark' ? (
                   <Sun className="w-4 h-4 text-amber-400 transition-transform active:rotate-90" />
                 ) : (
-                  <Moon className="w-4 h-4 text-violet-400 transition-transform active:-rotate-45" />
+                  <Moon className="w-4 h-4 text-violet-500 transition-transform active:-rotate-45" />
                 )}
               </button>
-            </div>
 
-            <div className="flex items-center gap-1.5">
-              {/* Mobile User Profile Menu Trigger with Popover attached */}
+              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
+
+              {/* Mobile User Profile Trigger with Popover attached */}
               {currentUser && (
-                <div className="relative" ref={mobileUserMenuRef}>
+                <div className="flex-1 flex justify-center relative" ref={mobileUserMenuRef}>
                   <button
                     type="button"
                     onClick={() => {
                       setIsUserMenuOpen(!isUserMenuOpen);
                       soundFx.playPop();
                     }}
-                    className="p-1 rounded-lg text-slate-200 flex items-center gap-1 text-xs font-bold cursor-pointer hover:bg-white/5"
+                    className="w-full py-1 rounded-xl text-slate-200 flex items-center justify-center gap-1 text-xs font-bold cursor-pointer hover:bg-white/5 [html.light_&]:hover:bg-white/60 transition-colors"
                     title="User Profile & Logout"
                   >
                     <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center font-bold text-[10px] text-white shadow-sm ring-1 ring-white/20">
@@ -265,32 +266,39 @@ export default function Navbar({
                 </div>
               )}
 
+              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
+
               {/* Speaker / Audio Toggle */}
               <button
                 type="button"
                 onClick={() => setSoundEnabled(!soundEnabled)}
-                className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+                className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-white hover:bg-white/5 [html.light_&]:hover:bg-white/60 transition-colors flex items-center justify-center cursor-pointer"
                 title={soundEnabled ? 'Mute sound' : 'Enable sound'}
               >
-                {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
+                {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-slate-400" />}
               </button>
+
+              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
 
               {/* Guide / Tour Button */}
               <button
                 type="button"
                 onClick={onOpenTour}
-                className="p-1.5 rounded-lg text-slate-300 hover:text-violet-300 hover:bg-white/5 transition-colors"
+                className="flex-1 py-1.5 rounded-xl text-slate-300 [html.light_&]:text-slate-700 hover:text-violet-300 hover:bg-white/5 [html.light_&]:hover:bg-white/60 transition-colors flex items-center justify-center cursor-pointer"
                 title="User Guide Tour"
               >
                 <HelpCircle className="w-4 h-4" />
               </button>
 
+              <div className="w-px h-4 bg-white/10 [html.light_&]:bg-slate-300/80 shrink-0"></div>
+
               {/* Task Completed Stats Badge */}
-              <div className="flex items-center gap-0.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md border border-emerald-500/20">
-                <span className="text-[10px]">{taskStats.completed}/{taskStats.total}</span>
+              <div className="flex-1 flex items-center justify-center" title="Completed / Total Tasks">
+                <div className="flex items-center gap-0.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 [html.light_&]:bg-emerald-500/15 px-2 py-1 rounded-lg border border-emerald-500/20 whitespace-nowrap">
+                  <span className="text-[10px] font-mono">{taskStats.completed}/{taskStats.total}</span>
+                </div>
               </div>
             </div>
-          </div>
 
           {/* LINE 3: Search Bar */}
           <div className="relative w-full">
