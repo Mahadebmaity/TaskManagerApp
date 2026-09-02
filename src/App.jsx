@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import UserWelcomeModal from './components/UserWelcomeModal';
 import AdminCMSModal from './components/AdminCMSModal';
 
-import { loadState, saveState, getUserHistoryKey, INITIAL_SAMPLE_TASKS } from './utils/storage';
+import { loadState, saveState, getUserStorageKey, getUserHistoryKey, INITIAL_SAMPLE_TASKS } from './utils/storage';
 import { isFirebaseConfigured, syncWorkspaceToCloud, subscribeWorkspace } from './utils/firebase';
 import { triggerCompletionConfetti, soundFx } from './utils/effects';
 import { Bell, X, Coffee, Sparkles } from 'lucide-react';
@@ -33,6 +33,9 @@ export default function App() {
       return null;
     }
   });
+
+  // Guard ref: Tracks which user's workspace is currently loaded in memory to prevent cross-user overwrite leaks
+  const appStateUserRef = useRef(getUserStorageKey(currentUser));
 
   const [appState, setAppState] = useState(() => loadState(currentUser));
   const [currentView, setCurrentView] = useState('list'); // 'kanban' | 'list' | 'analytics' | 'history'
@@ -86,27 +89,46 @@ export default function App() {
   });
 
   useEffect(() => {
-    try {
-      const key = getUserHistoryKey(currentUser);
-      localStorage.setItem(key, JSON.stringify(deletedTasks));
-    } catch (e) {
-      console.warn('Save deleted history error', e);
+    // Only save deleted tasks if it belongs to the active user currently in memory
+    const currentKey = getUserStorageKey(currentUser);
+    if (appStateUserRef.current === currentKey) {
+      try {
+        const key = getUserHistoryKey(currentUser);
+        localStorage.setItem(key, JSON.stringify(deletedTasks));
+      } catch (e) {
+        console.warn('Save deleted history error', e);
+      }
     }
   }, [deletedTasks, currentUser]);
 
-  // When user switches or logs in, load that user's specific workspace and deleted history
-  useEffect(() => {
-    const userWorkspace = loadState(currentUser);
-    setAppState(userWorkspace);
-
-    try {
-      const key = getUserHistoryKey(currentUser);
-      const savedHistory = localStorage.getItem(key);
-      setDeletedTasks(savedHistory ? JSON.parse(savedHistory) : []);
-    } catch (e) {
-      setDeletedTasks([]);
+  // Robust, synchronous user workspace switcher (prevents race condition state leaks between users)
+  const handleSwitchToUser = (targetUser) => {
+    // 1. Flush and save previous user's latest state cleanly before switching
+    const currentKey = getUserStorageKey(currentUser);
+    if (currentUser && appStateUserRef.current === currentKey) {
+      saveState(appState, currentUser);
     }
-  }, [currentUser?.name, currentUser?.id]);
+
+    // 2. Load target user's dedicated workspace and history
+    const targetKey = getUserStorageKey(targetUser);
+    const targetWorkspace = loadState(targetUser);
+    const targetHistoryKey = getUserHistoryKey(targetUser);
+    let targetHistory = [];
+    try {
+      const savedHist = localStorage.getItem(targetHistoryKey);
+      if (savedHist) targetHistory = JSON.parse(savedHist);
+    } catch (err) {
+      console.warn('History load error', err);
+    }
+
+    // 3. Update active user ref BEFORE setting React states to block saving stale state into new user
+    appStateUserRef.current = targetKey;
+
+    // 4. Update React states synchronously
+    setCurrentUser(targetUser);
+    setAppState(targetWorkspace);
+    setDeletedTasks(targetHistory);
+  };
 
   const [registeredUsers, setRegisteredUsers] = useState(() => {
     try {
@@ -177,14 +199,18 @@ export default function App() {
 
   // Save new user name from welcome modal and launch feature tour!
   const handleSaveUserName = (name) => {
-    const newUser = {
-      id: Date.now().toString(),
-      name,
+    const cleanName = name.trim();
+    const cleanId = cleanName.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+    const existing = registeredUsers.find((u) => u.name.toLowerCase() === cleanName.toLowerCase());
+    const newUser = existing || {
+      id: cleanId,
+      name: cleanName,
       joinedAt: new Date().toISOString(),
       lastActive: new Date().toISOString()
     };
 
-    setCurrentUser(newUser);
+    handleSwitchToUser(newUser);
+
     try {
       localStorage.setItem('taskmanager_user_profile', JSON.stringify(newUser));
     } catch (e) {
@@ -192,7 +218,7 @@ export default function App() {
     }
 
     setRegisteredUsers((prev) => {
-      const updated = [newUser, ...prev.filter((u) => u.name.toLowerCase() !== name.toLowerCase())];
+      const updated = [newUser, ...prev.filter((u) => u.name.toLowerCase() !== cleanName.toLowerCase())];
       try {
         localStorage.setItem('app_registered_users_list', JSON.stringify(updated));
       } catch (err) {
@@ -297,33 +323,41 @@ export default function App() {
 
   const [isCloudConnected, setIsCloudConnected] = useState(isFirebaseConfigured());
 
-  // Real-time Cloud Firestore Workspace Listener
+  // Real-time Cloud Firestore Workspace Listener (isolated per specific user)
   useEffect(() => {
-    if (!isFirebaseConfigured()) {
+    if (!isFirebaseConfigured() || !currentUser?.name) {
       setIsCloudConnected(false);
       return;
     }
 
-    const workspaceKey = currentUser?.name ? currentUser.name : 'shared_workspace';
+    const workspaceKey = currentUser.name.trim().toLowerCase();
     const unsubscribe = subscribeWorkspace(workspaceKey, (cloudData) => {
       if (cloudData && Array.isArray(cloudData.tasks)) {
-        setAppState((prev) => ({
-          ...prev,
-          ...cloudData
-        }));
-        setIsCloudConnected(true);
+        const expectedKey = getUserStorageKey(currentUser);
+        // Only accept cloud update if we are still on the same user's workspace
+        if (appStateUserRef.current === expectedKey) {
+          setAppState((prev) => ({
+            ...prev,
+            ...cloudData
+          }));
+          setIsCloudConnected(true);
+        }
       }
     });
 
     return () => unsubscribe();
-  }, [currentUser]);
+  }, [currentUser?.name]);
 
-  // Sync state changes to LocalStorage and Firebase Cloud
+  // Sync state changes to LocalStorage and Firebase Cloud (ONLY if appState belongs to the active user!)
   useEffect(() => {
-    saveState(appState, currentUser);
-    if (isFirebaseConfigured()) {
-      const workspaceKey = currentUser?.name ? currentUser.name : 'shared_workspace';
-      syncWorkspaceToCloud(workspaceKey, appState);
+    const currentKey = getUserStorageKey(currentUser);
+    // Strict guard: Never save if appState belongs to another user (e.g. during switch/logout transition)
+    if (appStateUserRef.current === currentKey) {
+      saveState(appState, currentUser);
+      if (isFirebaseConfigured() && currentUser?.name) {
+        const workspaceKey = currentUser.name.trim().toLowerCase();
+        syncWorkspaceToCloud(workspaceKey, appState);
+      }
     }
   }, [appState, currentUser]);
 
@@ -711,7 +745,7 @@ export default function App() {
 
   // Logout user and reopen welcome modal
   const handleLogoutUser = () => {
-    setCurrentUser(null);
+    handleSwitchToUser(null);
     setIsAdmin(false);
     try {
       localStorage.removeItem('taskmanager_user_profile');
@@ -910,7 +944,7 @@ export default function App() {
             joinedAt: new Date().toISOString(),
             lastActive: new Date().toISOString()
           };
-          setCurrentUser(adminProfile);
+          handleSwitchToUser(adminProfile);
           setIsAdmin(true);
           try {
             localStorage.setItem('taskmanager_user_profile', JSON.stringify(adminProfile));

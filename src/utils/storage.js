@@ -89,17 +89,21 @@ export const INITIAL_SAMPLE_TASKS = [
   }
 ];
 
+export function getFreshSampleTasks() {
+  return JSON.parse(JSON.stringify(INITIAL_SAMPLE_TASKS));
+}
+
 export function getUserStorageKey(user) {
   if (!user) return 'your_task_app_state_guest';
-  const rawId = typeof user === 'string' ? user : (user.id || user.name || 'guest');
-  const cleanId = rawId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+  const nameOrId = typeof user === 'string' ? user : (user.name || user.id || 'guest');
+  const cleanId = nameOrId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
   return `your_task_app_state_user_${cleanId}`;
 }
 
 export function getUserHistoryKey(user) {
   if (!user) return 'taskmanager_deleted_history_guest';
-  const rawId = typeof user === 'string' ? user : (user.id || user.name || 'guest');
-  const cleanId = rawId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+  const nameOrId = typeof user === 'string' ? user : (user.name || user.id || 'guest');
+  const cleanId = nameOrId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
   return `taskmanager_deleted_history_${cleanId}`;
 }
 
@@ -109,38 +113,31 @@ export function loadState(user) {
     const data = localStorage.getItem(key);
     if (data) {
       const parsed = JSON.parse(data);
-      // If user profile has no tasks (e.g. from previously empty initialization), seed sample tasks so features & tour are interactive
-      if (!parsed.tasks || parsed.tasks.length === 0) {
-        return {
-          ...parsed,
-          tasks: INITIAL_SAMPLE_TASKS,
-          userXP: parsed.userXP || 320,
-          streakDays: parsed.streakDays || 4,
-          focusMinutesToday: parsed.focusMinutesToday || 65
-        };
+      if (Array.isArray(parsed.tasks)) {
+        return parsed;
       }
-      return parsed;
     }
 
-    // If user is brand new and has no saved state yet, seed with rich interactive sample tasks
-    if (user && user.name) {
-      return { tasks: INITIAL_SAMPLE_TASKS, userXP: 320, streakDays: 4, focusMinutesToday: 65 };
+    // If user is brand new or has no saved state yet, initialize with a fresh copy of demo tasks
+    const freshTasks = getFreshSampleTasks();
+    const initialState = {
+      tasks: freshTasks,
+      userXP: 320,
+      streakDays: 4,
+      focusMinutesToday: 65
+    };
+
+    // Save this fresh state under the user's dedicated key so it's isolated
+    try {
+      localStorage.setItem(key, JSON.stringify(initialState));
+    } catch (e) {
+      console.warn('Initial state save error', e);
     }
 
-    // Default seed fallback for guests
-    const legacyData = localStorage.getItem(STORAGE_KEY);
-    if (legacyData) {
-      const legacyParsed = JSON.parse(legacyData);
-      if (!legacyParsed.tasks || legacyParsed.tasks.length === 0) {
-        return { ...legacyParsed, tasks: INITIAL_SAMPLE_TASKS };
-      }
-      return legacyParsed;
-    }
-
-    return { tasks: INITIAL_SAMPLE_TASKS, userXP: 320, streakDays: 4, focusMinutesToday: 65 };
+    return initialState;
   } catch (e) {
     console.error('Failed to load state', e);
-    return { tasks: INITIAL_SAMPLE_TASKS, userXP: 320, streakDays: 4, focusMinutesToday: 65 };
+    return { tasks: getFreshSampleTasks(), userXP: 320, streakDays: 4, focusMinutesToday: 65 };
   }
 }
 
