@@ -78,9 +78,11 @@ export default function Navbar({
     };
 
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
@@ -194,10 +196,12 @@ export default function Navbar({
           </div>
 
           {/* Lines 2, 3, 4: Collapsible on scroll (hidden when scrolled, visible at top) */}
-          <div className={`flex flex-col gap-2 w-full overflow-hidden transition-all duration-300 ease-in-out ${
+          <div className={`flex flex-col gap-2 w-full transition-all duration-300 ease-in-out ${
             isScrolled 
-              ? 'max-h-0 opacity-0 pointer-events-none scale-y-95 origin-top -my-1' 
-              : 'max-h-[300px] opacity-100 scale-y-100 origin-top'
+              ? 'max-h-0 opacity-0 pointer-events-none scale-y-95 origin-top -my-1 overflow-hidden' 
+              : isUserMenuOpen
+              ? 'max-h-[300px] opacity-100 scale-y-100 origin-top overflow-visible relative z-50'
+              : 'max-h-[300px] opacity-100 scale-y-100 origin-top overflow-visible'
           }`}>
             {/* LINE 2: Actions Bar with borderless sleek icons */}
             <div className="flex items-center justify-between gap-1 w-full pt-0.5 px-0.5">

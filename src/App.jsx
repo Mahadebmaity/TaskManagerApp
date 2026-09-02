@@ -875,6 +875,8 @@ export default function App() {
       {/* First-Time User Welcome & Name Onboarding Modal */}
       <UserWelcomeModal
         isOpen={isWelcomeModalOpen}
+        initialName={currentUser?.name || ''}
+        onClose={currentUser ? () => setIsWelcomeModalOpen(false) : undefined}
         onSaveUserName={handleSaveUserName}
         onAdminLoginSuccess={(adminName) => {
           const adminProfile = {

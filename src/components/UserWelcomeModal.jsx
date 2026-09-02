@@ -9,21 +9,31 @@ import {
   Lock, 
   ShieldCheck, 
   KeyRound,
-  CheckCircle2
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import { soundFx } from '../utils/effects';
 
 export default function UserWelcomeModal({ 
   isOpen, 
   onSaveUserName, 
-  onAdminLoginSuccess 
+  onAdminLoginSuccess,
+  onClose,
+  initialName = ''
 }) {
   // Mode: 'user' | 'admin'
   const [entryMode, setEntryMode] = useState('user');
 
   // User input
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState(initialName || '');
   const [userError, setUserError] = useState('');
+
+  // Sync initialName when modal opens
+  React.useEffect(() => {
+    if (initialName) {
+      setUserName(initialName);
+    }
+  }, [initialName, isOpen]);
 
   // Admin inputs
   const [adminName, setAdminName] = useState('Mahadeb Maity');
@@ -93,6 +103,20 @@ export default function UserWelcomeModal({
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="glass-panel w-full max-w-md rounded-3xl border border-white/20 shadow-2xl p-6 sm:p-8 relative space-y-5 animate-scaleIn text-center my-auto">
+        {/* Optional Close Button if user already has an active profile */}
+        {onClose && (
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              soundFx.playPop();
+            }}
+            className="absolute top-4 right-4 p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-white/10 transition-colors cursor-pointer"
+            title="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
         
         {/* Brand Logo & Top Switcher Tabs */}
         <div className="flex flex-col items-center gap-2.5">
