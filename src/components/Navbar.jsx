@@ -13,6 +13,10 @@ import {
   User, 
   History,
   ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  ChevronsRight,
+  ChevronsLeft,
   LogOut,
   Sparkles,
   X,
@@ -46,6 +50,51 @@ export default function Navbar({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const mobileUserMenuRef = useRef(null);
+
+  // Toggleable states: Laptop/Desktop nav tools & Mobile Line 2 actions row
+  const [isDesktopNavOpen, setIsDesktopNavOpen] = useState(() => {
+    try {
+      const saved = localStorage.getItem('taskmanager_desktop_nav_open');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const [isMobileLine2Open, setIsMobileLine2Open] = useState(() => {
+    try {
+      const saved = localStorage.getItem('taskmanager_mobile_line2_open');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleDesktopNav = () => {
+    setIsDesktopNavOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('taskmanager_desktop_nav_open', JSON.stringify(next));
+      } catch (e) {
+        console.warn(e);
+      }
+      return next;
+    });
+    soundFx.playPop();
+  };
+
+  const toggleMobileLine2 = () => {
+    setIsMobileLine2Open((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('taskmanager_mobile_line2_open', JSON.stringify(next));
+      } catch (e) {
+        console.warn(e);
+      }
+      return next;
+    });
+    soundFx.playPop();
+  };
 
   const activeMode = pomodoro?.runningMode || pomodoro?.mode || 'focus';
   const activeSession = pomodoro?.sessions ? pomodoro.sessions[activeMode] : pomodoro;
@@ -178,12 +227,12 @@ export default function Navbar({
         {/* ========================================================================= */}
         <div className="flex md:hidden flex-col gap-1.5 w-full transition-all duration-300">
           
-          {/* LINE 1: Brand Logo + Website Name + AI Powered (ALWAYS STICKY) */}
+          {/* LINE 1: Brand Logo + Website Name + AI Powered & Line 2 Arrow Toggle */}
           <div className="flex items-center justify-between w-full">
             <button
               type="button"
               onClick={onResetHome}
-              className="flex items-center gap-2 text-left cursor-pointer group focus:outline-none"
+              className="flex items-center gap-2 text-left cursor-pointer group focus:outline-none min-w-0"
               title="Click to return to home view"
             >
               <Logo size="sm" />
@@ -197,6 +246,21 @@ export default function Navbar({
                 </span>
               </div>
             </button>
+
+            {/* Mobile Line 2 Arrow Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleMobileLine2}
+              className="p-1 rounded-xl bg-slate-900/70 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 [html.light_&]:bg-slate-100 [html.light_&]:border-slate-200 [html.light_&]:text-slate-600 transition-all cursor-pointer flex items-center gap-1 text-[10px] font-bold shadow-sm shrink-0"
+              title={isMobileLine2Open ? 'Collapse Action Tools' : 'Expand Action Tools'}
+            >
+              <span className="text-[9px] text-slate-400 [html.light_&]:text-slate-500 font-medium hidden xs:inline">
+                {isMobileLine2Open ? 'Hide' : 'Tools'}
+              </span>
+              <ChevronDown className={`w-3.5 h-3.5 text-cyan-400 transition-transform duration-300 ${
+                isMobileLine2Open ? 'rotate-180 text-violet-400' : ''
+              }`} />
+            </button>
           </div>
 
           {/* Lines 2, 3, 4: Collapsible on scroll (hidden when scrolled, visible at top with smooth reveal effect) */}
@@ -207,8 +271,13 @@ export default function Navbar({
               ? 'max-h-[350px] opacity-100 translate-y-0 overflow-visible relative z-50 animate-nav-reveal'
               : 'max-h-[350px] opacity-100 translate-y-0 overflow-visible animate-nav-reveal'
           }`}>
-            {/* LINE 2: Actions Bar distributed seamlessly across full width without borders */}
-            <div className="flex items-center justify-between w-full py-1 px-0.5 gap-1 transition-all duration-300">
+            {/* LINE 2: Actions Bar distributed seamlessly across full width - Toggled by arrow button */}
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              isMobileLine2Open 
+                ? 'max-h-[80px] opacity-100' 
+                : 'max-h-0 opacity-0 pointer-events-none -my-1'
+            }`}>
+              <div className="flex items-center justify-between w-full py-1 px-0.5 gap-1 transition-all duration-300">
               {/* Focus Timer Button */}
               <button
                 type="button"
@@ -293,6 +362,7 @@ export default function Navbar({
                 </div>
               </div>
             </div>
+          </div>
 
           {/* LINE 3: Search Bar */}
           <div className="relative w-full">
@@ -408,30 +478,52 @@ export default function Navbar({
         {/* ========================================================================= */}
         <div className="hidden md:flex items-center justify-between gap-3 w-full">
           
-          {/* Left: Brand Logo & Title (Click to return to home) */}
-          <button
-            type="button"
-            onClick={onResetHome}
-            className="flex items-center gap-2.5 shrink-0 text-left cursor-pointer group focus:outline-none"
-            title="Click to return to home view"
-          >
-            <Logo size="md" />
-            <div className="flex flex-col shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-black tracking-tight text-white text-gradient whitespace-nowrap group-hover:opacity-90">
-                  Your task Manager
-                </span>
-                <span className="text-[10px] uppercase font-black tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-violet-600/30 to-cyan-500/30 text-cyan-300 border border-cyan-400/40 shadow-sm shrink-0 flex items-center gap-1">
-                  <Sparkles className="w-2.5 h-2.5 text-cyan-400 shrink-0" />
-                  <span>AI Powered</span>
-                </span>
+          {/* Left: Brand Logo & Title + Laptop Arrow Toggle */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={onResetHome}
+              className="flex items-center gap-2.5 text-left cursor-pointer group focus:outline-none shrink-0"
+              title="Click to return to home view"
+            >
+              <Logo size="md" />
+              <div className="flex flex-col shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-black tracking-tight text-white text-gradient whitespace-nowrap group-hover:opacity-90">
+                    Your task Manager
+                  </span>
+                  <span className="text-[10px] uppercase font-black tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-violet-600/30 to-cyan-500/30 text-cyan-300 border border-cyan-400/40 shadow-sm shrink-0 flex items-center gap-1">
+                    <Sparkles className="w-2.5 h-2.5 text-cyan-400 shrink-0" />
+                    <span>AI Powered</span>
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-400 font-medium whitespace-nowrap hidden xl:block">
+                  Smart Task Intelligence & Deep Work
+                </p>
               </div>
-              <p className="text-[10px] text-slate-400 font-medium whitespace-nowrap hidden xl:block">
-                Smart Task Intelligence & Deep Work
-              </p>
-            </div>
-          </button>
+            </button>
 
+            {/* Desktop Navbar Collapse / Expand Arrow Button */}
+            <button
+              type="button"
+              onClick={toggleDesktopNav}
+              className="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 [html.light_&]:bg-slate-100 [html.light_&]:border-slate-300/80 [html.light_&]:text-slate-700 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold shadow-sm shrink-0 ml-1"
+              title={isDesktopNavOpen ? 'Hide Nav Tools (Collapse)' : 'Show Nav Tools (Expand)'}
+            >
+              {isDesktopNavOpen ? (
+                <ChevronLeft className="w-4 h-4 text-cyan-400 hover:scale-110 transition-transform" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-violet-400 hover:scale-110 transition-transform" />
+              )}
+            </button>
+          </div>
+
+          {/* Collapsible Desktop Nav Tools Container */}
+          <div className={`flex items-center justify-end gap-3 flex-1 overflow-hidden transition-all duration-500 ease-in-out ${
+            isDesktopNavOpen 
+              ? 'max-w-[1200px] opacity-100 scale-100' 
+              : 'max-w-0 opacity-0 scale-95 pointer-events-none'
+          }`}>
           {/* Center: Search Bar with Expand on Focus */}
           <div id="tour-search-bar" className="relative w-28 lg:w-40 xl:w-48 focus-within:w-44 lg:focus-within:w-56 shrink-0 transition-all duration-300 group">
             <div className="relative flex items-center">
@@ -646,6 +738,7 @@ export default function Navbar({
                 {taskStats.completed}/{taskStats.total}
               </span>
             </div>
+          </div>
           </div>
 
         </div>
