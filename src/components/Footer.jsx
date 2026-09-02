@@ -14,6 +14,7 @@ import {
   Save, 
   RotateCcw, 
   Check, 
+  Copy,
   ShieldCheck, 
   Edit3 
 } from 'lucide-react';
@@ -112,11 +113,40 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
   const [footerConfig, setFooterConfig] = useState(() => {
     try {
       const saved = localStorage.getItem('admin_footer_config');
-      return saved ? { ...DEFAULT_FOOTER_CONFIG, ...JSON.parse(saved) } : DEFAULT_FOOTER_CONFIG;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed.links)) {
+          parsed.links = parsed.links.map((l) => {
+            if (l.platform === 'email' && (l.url?.includes('mahadebmaity.dev') || !l.url)) {
+              return { ...l, url: 'mailto:maitymahadeb530@gmail.com' };
+            }
+            return l;
+          });
+        }
+        return { ...DEFAULT_FOOTER_CONFIG, ...parsed };
+      }
+      return DEFAULT_FOOTER_CONFIG;
     } catch {
       return DEFAULT_FOOTER_CONFIG;
     }
   });
+
+  // Smart Email Contact Modal state
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
+  const [activeEmailAddress, setActiveEmailAddress] = useState('maitymahadeb530@gmail.com');
+
+  const handleSocialClick = (e, social) => {
+    if (social.platform === 'email' || social.url?.startsWith('mailto:')) {
+      e.preventDefault();
+      const rawEmail = social.url.replace(/^mailto:/, '').split('?')[0] || 'maitymahadeb530@gmail.com';
+      setActiveEmailAddress(rawEmail);
+      setIsEmailModalOpen(true);
+      soundFx.playPop();
+    } else {
+      soundFx.playPop();
+    }
+  };
 
   // Admin Modal state
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -278,15 +308,16 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 w-full">
               {(footerConfig.links || []).map((social) => {
                 const Icon = ICON_MAP[social.platform] || Globe;
+                const isEmail = social.platform === 'email' || social.url?.startsWith('mailto:');
                 return (
                   <a
                     key={social.id || social.name}
                     href={social.url}
-                    target="_blank"
+                    target={isEmail ? undefined : '_blank'}
                     rel="noopener noreferrer"
-                    onClick={() => soundFx.playPop()}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/10 text-slate-300 text-xs font-semibold transition-all group ${social.color || 'hover:text-violet-400 hover:border-violet-500/40 hover:bg-violet-950/30'} shadow-sm hover:scale-105 active:scale-95`}
-                    title={`Open ${social.name}`}
+                    onClick={(e) => handleSocialClick(e, social)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/10 text-slate-300 text-xs font-semibold transition-all group ${social.color || 'hover:text-violet-400 hover:border-violet-500/40 hover:bg-violet-950/30'} shadow-sm hover:scale-105 active:scale-95 cursor-pointer`}
+                    title={isEmail ? 'Click to Email Mahadeb Maity' : `Open ${social.name}`}
                   >
                     <Icon className="w-3.5 h-3.5 shrink-0 transition-transform group-hover:scale-110" />
                     <span>{social.name}</span>
@@ -352,6 +383,111 @@ export default function Footer({ onOpenTour, onOpenAdminCMS, isAdmin }) {
         </div>
 
       </div>
+
+      {/* ========================================================================= */}
+      {/* ✉️ SMART EMAIL CONTACT MODAL */}
+      {/* ========================================================================= */}
+      {isEmailModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+          <div className="glass-panel w-full max-w-md rounded-3xl border border-white/20 shadow-2xl p-5 sm:p-6 relative space-y-4 animate-scaleIn text-center my-auto">
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsEmailModalOpen(false);
+                soundFx.playPop();
+              }}
+              className="absolute top-4 right-4 p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-white/10 transition-colors cursor-pointer"
+              title="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Header */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-lg ring-2 ring-white/20">
+                <Mail className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-black text-white">Contact Developer</h3>
+              <p className="text-xs text-slate-400 max-w-xs">
+                Send a direct email message or copy the email address below:
+              </p>
+            </div>
+
+            {/* Email Address Display Pill with 1-Click Copy */}
+            <div className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-950/90 border border-white/10 shadow-inner">
+              <div className="flex items-center gap-2 min-w-0 pl-1">
+                <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-xs font-mono font-bold text-slate-200 select-all truncate">
+                  {activeEmailAddress}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(activeEmailAddress);
+                  setEmailCopied(true);
+                  soundFx.playCompletionChime();
+                  setTimeout(() => setEmailCopied(false), 2000);
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  emailCopied
+                    ? 'bg-emerald-500 text-slate-950 shadow-md font-extrabold'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10'
+                }`}
+                title="Copy email to clipboard"
+              >
+                {emailCopied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              {/* Option 1: Open in Gmail Web (Works 100% on any browser) */}
+              <a
+                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(activeEmailAddress)}&su=${encodeURIComponent('TaskManager Inquiry')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  soundFx.playPop();
+                  setIsEmailModalOpen(false);
+                }}
+                className="p-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-emerald-500/25 transition-all cursor-pointer hover:scale-[1.02] active:scale-95"
+              >
+                <ExternalLink className="w-4 h-4 shrink-0" />
+                <span>Open in Gmail (Web)</span>
+              </a>
+
+              {/* Option 2: Open in Default Mail App (Outlook, Apple Mail, etc.) */}
+              <a
+                href={`mailto:${activeEmailAddress}?subject=TaskManager%20Inquiry`}
+                onClick={() => {
+                  soundFx.playPop();
+                  setIsEmailModalOpen(false);
+                }}
+                className="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-white/10 hover:border-white/20 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer hover:scale-[1.02] active:scale-95"
+              >
+                <Mail className="w-4 h-4 shrink-0 text-cyan-400" />
+                <span>Open Mail App</span>
+              </a>
+            </div>
+
+            <p className="text-[10.5px] text-slate-500 leading-snug">
+              💡 Tip: Click <strong>Open in Gmail</strong> to compose directly in browser, or <strong>Copy</strong> to paste into any email service.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 🛡️ ADMIN FOOTER & DEVELOPER PROFILE MANAGEMENT MODAL */}

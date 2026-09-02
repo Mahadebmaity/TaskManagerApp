@@ -108,22 +108,39 @@ export function loadState(user) {
     const key = getUserStorageKey(user);
     const data = localStorage.getItem(key);
     if (data) {
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      // If user profile has no tasks (e.g. from previously empty initialization), seed sample tasks so features & tour are interactive
+      if (!parsed.tasks || parsed.tasks.length === 0) {
+        return {
+          ...parsed,
+          tasks: INITIAL_SAMPLE_TASKS,
+          userXP: parsed.userXP || 320,
+          streakDays: parsed.streakDays || 4,
+          focusMinutesToday: parsed.focusMinutesToday || 65
+        };
+      }
+      return parsed;
     }
 
-    // If user is brand new and has no saved state yet, start with clean empty workspace
+    // If user is brand new and has no saved state yet, seed with rich interactive sample tasks
     if (user && user.name) {
-      return { tasks: [], userXP: 0, streakDays: 0, focusMinutesToday: 0 };
+      return { tasks: INITIAL_SAMPLE_TASKS, userXP: 320, streakDays: 4, focusMinutesToday: 65 };
     }
 
     // Default seed fallback for guests
     const legacyData = localStorage.getItem(STORAGE_KEY);
-    if (legacyData) return JSON.parse(legacyData);
+    if (legacyData) {
+      const legacyParsed = JSON.parse(legacyData);
+      if (!legacyParsed.tasks || legacyParsed.tasks.length === 0) {
+        return { ...legacyParsed, tasks: INITIAL_SAMPLE_TASKS };
+      }
+      return legacyParsed;
+    }
 
-    return { tasks: [], userXP: 0, streakDays: 0, focusMinutesToday: 0 };
+    return { tasks: INITIAL_SAMPLE_TASKS, userXP: 320, streakDays: 4, focusMinutesToday: 65 };
   } catch (e) {
     console.error('Failed to load state', e);
-    return { tasks: [], userXP: 0, streakDays: 0, focusMinutesToday: 0 };
+    return { tasks: INITIAL_SAMPLE_TASKS, userXP: 320, streakDays: 4, focusMinutesToday: 65 };
   }
 }
 

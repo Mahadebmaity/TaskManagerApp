@@ -138,7 +138,7 @@ export default function KanbanBoard({ tasks, onUpdateStatus, onMoveTask, onDelet
       </div>
 
       {/* Kanban Grid with Dynamic Natural Content Height */}
-      <div className="grid gap-3.5 sm:gap-5 w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-start">
+      <div id="tour-kanban-board" className="grid gap-3.5 sm:gap-5 w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-start">
         {displayColumns.map((col) => {
           const colTasks = getTasksByStatus(col.id);
           const isDropActive = dragOverColId === col.id;
@@ -180,11 +180,12 @@ export default function KanbanBoard({ tasks, onUpdateStatus, onMoveTask, onDelet
                     const totalSubtasks = task.subtasks ? task.subtasks.length : 0;
                     const progressPct = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
                     const isDraggingThis = draggingTaskId === task.id;
+                    const isFirstOverallTask = tasks.length > 0 && task.id === tasks[0].id;
 
                     return (
                       <div
                         key={task.id}
-                        id={taskIdx === 0 ? "tour-list-first-task" : undefined}
+                        id={isFirstOverallTask ? "tour-list-first-task" : undefined}
                         draggable
                         onDragStart={(e) => handleDragStart(e, task.id)}
                         onDragEnd={handleDragEnd}

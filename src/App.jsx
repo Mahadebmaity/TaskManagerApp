@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import UserWelcomeModal from './components/UserWelcomeModal';
 import AdminCMSModal from './components/AdminCMSModal';
 
-import { loadState, saveState, getUserHistoryKey } from './utils/storage';
+import { loadState, saveState, getUserHistoryKey, INITIAL_SAMPLE_TASKS } from './utils/storage';
 import { isFirebaseConfigured, syncWorkspaceToCloud, subscribeWorkspace } from './utils/firebase';
 import { triggerCompletionConfetti, soundFx } from './utils/effects';
 import { Bell, X, Coffee, Sparkles } from 'lucide-react';
@@ -151,6 +151,21 @@ export default function App() {
   // Guided Feature Onboarding Tour (Auto-opens after name input or if not completed)
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
 
+  const handleOpenTour = () => {
+    // Switch to list or kanban so task cards and inputs are active
+    if (currentView !== 'list' && currentView !== 'kanban') {
+      setCurrentView('list');
+    }
+    setSearchQuery('');
+    if (!appState.tasks || appState.tasks.length === 0) {
+      setAppState((prev) => ({
+        ...prev,
+        tasks: INITIAL_SAMPLE_TASKS
+      }));
+    }
+    setIsOnboardingOpen(true);
+  };
+
   const handleCloseOnboarding = () => {
     setIsOnboardingOpen(false);
     try {
@@ -190,7 +205,7 @@ export default function App() {
 
     // Prompt the feature tour right after saving name
     setTimeout(() => {
-      setIsOnboardingOpen(true);
+      handleOpenTour();
     }, 350);
   };
 
@@ -765,7 +780,7 @@ export default function App() {
         soundEnabled={soundEnabled}
         setSoundEnabled={setSoundEnabled}
         onOpenFocusTimer={() => setIsFocusTimerOpen(true)}
-        onOpenTour={() => setIsOnboardingOpen(true)}
+        onOpenTour={handleOpenTour}
         taskStats={taskStats}
         pomodoro={pomodoroState}
         currentUser={currentUser}
@@ -834,7 +849,7 @@ export default function App() {
       {/* Modern Developer & App Footer - Displayed ONLY on Landing / Main Home Workspace */}
       {(currentView === 'list' || currentView === 'kanban') && (
         <Footer 
-          onOpenTour={() => setIsOnboardingOpen(true)} 
+          onOpenTour={handleOpenTour} 
           onOpenAdminCMS={handleOpenAdminCMS}
           isAdmin={isAdmin}
         />
@@ -870,6 +885,16 @@ export default function App() {
       <OnboardingTour
         isOpen={isOnboardingOpen}
         onClose={handleCloseOnboarding}
+        currentView={currentView}
+        onSwitchView={setCurrentView}
+        onEnsureTasks={() => {
+          if (!appState.tasks || appState.tasks.length === 0) {
+            setAppState((prev) => ({
+              ...prev,
+              tasks: INITIAL_SAMPLE_TASKS
+            }));
+          }
+        }}
       />
 
       {/* First-Time User Welcome & Name Onboarding Modal */}

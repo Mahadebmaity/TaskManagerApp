@@ -155,7 +155,7 @@ export default function ListView({ tasks, allTasks = [], onUpdateStatus, onReord
       </div>
 
       {/* Task List Items */}
-      <div className="space-y-2.5 sm:space-y-2">
+      <div id="tour-list-container" className="space-y-2.5 sm:space-y-2">
         {filteredTasks.length === 0 ? (
           <div className="py-12 text-center text-slate-500 text-xs sm:text-sm">
             No matching tasks found. Adjust your filters or add a new task!

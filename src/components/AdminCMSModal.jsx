@@ -75,7 +75,7 @@ const DEFAULT_ADMIN_CONFIG = {
       id: '5',
       platform: 'email',
       name: 'Email Contact',
-      url: 'mailto:mahadebmaity.dev@gmail.com',
+      url: 'mailto:maitymahadeb530@gmail.com',
       color: 'hover:text-emerald-400 hover:border-emerald-500/40 hover:bg-emerald-950/30'
     }
   ],

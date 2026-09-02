@@ -226,10 +226,29 @@ const TOUR_STEPS_I18N = [
   }
 ];
 
-export default function OnboardingTour({ isOpen, onClose }) {
+export default function OnboardingTour({ 
+  isOpen, 
+  onClose,
+  currentView,
+  onSwitchView,
+  onEnsureTasks
+}) {
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [targetRect, setTargetRect] = useState(null);
   const [popoverPos, setPopoverPos] = useState({ top: null, bottom: null, left: 16, width: 380, maxHeight: 340 });
+
+  // Interactive Live Demo preview for Step 3
+  const [demoPriority, setDemoPriority] = useState('high');
+  const [demoDone, setDemoDone] = useState(false);
+
+  const cycleDemoPriority = () => {
+    soundFx.playPop();
+    setDemoPriority((prev) => {
+      if (prev === 'high') return 'medium';
+      if (prev === 'medium') return 'low';
+      return 'high';
+    });
+  };
   
   // Language State: 'en' by default, switchable to 'bn'
   const [lang, setLang] = useState(() => {
@@ -255,6 +274,17 @@ export default function OnboardingTour({ isOpen, onClose }) {
   const StepIcon = currentStep?.icon || Sparkles;
   const isFirstStep = currentStepIdx === 0;
   const isLastStep = currentStepIdx === TOUR_STEPS_I18N.length - 1;
+
+  // Auto-switch view and ensure tasks exist when reaching task-related steps
+  useEffect(() => {
+    if (!isOpen) return;
+    if (currentStep?.id === 'smart-input' || currentStep?.id === 'list-card') {
+      if (onEnsureTasks) onEnsureTasks();
+      if (onSwitchView && currentView !== 'list' && currentView !== 'kanban') {
+        onSwitchView('list');
+      }
+    }
+  }, [isOpen, currentStep?.id, currentView, onSwitchView, onEnsureTasks]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -308,6 +338,14 @@ export default function OnboardingTour({ isOpen, onClose }) {
         if (mobEl) {
           const r = mobEl.getBoundingClientRect();
           if (r.width > 0 && r.height > 0) return mobEl;
+        }
+      }
+      // If list first task is not found, fallback to list container or kanban board
+      if (selector === '#tour-list-first-task') {
+        const fallback = document.querySelector('#tour-list-container') || document.querySelector('#tour-kanban-board');
+        if (fallback) {
+          const r = fallback.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) return fallback;
         }
       }
       return el;
@@ -474,7 +512,7 @@ export default function OnboardingTour({ isOpen, onClose }) {
           />
         </svg>
       ) : (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md transition-all duration-300 z-40"></div>
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-all duration-300 z-40"></div>
       )}
 
       {/* High-visibility Pulsing Neon Halo Ring (Clean highlight without obstructing text tags) */}
@@ -493,7 +531,7 @@ export default function OnboardingTour({ isOpen, onClose }) {
       {/* Floating Guided Popover Card (Guaranteed Always-Visible Controls) */}
       <div
         className={`fixed z-50 transition-all duration-300 pointer-events-auto ${
-          !targetRect ? 'inset-0 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md' : ''
+          !targetRect ? 'inset-0 flex items-center justify-center p-4' : ''
         }`}
         style={
           targetRect
@@ -586,6 +624,58 @@ export default function OnboardingTour({ isOpen, onClose }) {
                 </p>
               )}
             </div>
+
+            {/* Interactive Live Demo Preview for Step 3 (1-Tap Priority Cycler & Checkbox) */}
+            {currentStep.id === 'list-card' && (
+              <div className="p-2 sm:p-2.5 rounded-xl bg-slate-950/90 border border-emerald-500/30 shadow-inner space-y-1.5 animate-fadeIn">
+                <div className="flex items-center justify-between text-[10px] text-emerald-300 font-bold uppercase tracking-wider">
+                  <span>{lang === 'bn' ? '⚡ লাইভ ডেমো (চেক ও ক্লিক করে দেখুন):' : '⚡ Live Interactive Demo (Try Clicking Below):'}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-900/90 border border-white/10">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-slate-500 cursor-grab text-xs">⋮⋮</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDemoDone(!demoDone);
+                        soundFx.playPop();
+                      }}
+                      className="cursor-pointer transition-transform active:scale-90"
+                      title={lang === 'bn' ? 'স্ট্যাটাস টগল করুন' : 'Toggle Done'}
+                    >
+                      {demoDone ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      ) : (
+                        <div className="w-4 h-4 rounded border border-slate-500 hover:border-emerald-400" />
+                      )}
+                    </button>
+                    <span className={`text-[11px] font-medium truncate ${demoDone ? 'line-through text-slate-500' : 'text-slate-200'}`}>
+                      {lang === 'bn' ? 'স্মার্ট টাস্ক কার্ড' : 'Sample Interactive Task'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={cycleDemoPriority}
+                      className={`text-[9px] sm:text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded cursor-pointer border transition-all active:scale-95 ${
+                        demoPriority === 'high'
+                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
+                          : demoPriority === 'medium'
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                      }`}
+                      title={lang === 'bn' ? 'ক্লিক করে প্রায়োরিটি পরিবর্তন করুন' : 'Click to cycle priority'}
+                    >
+                      {demoPriority}
+                    </button>
+                    <span className="text-[10px] p-1 rounded bg-slate-800 text-slate-300 border border-white/10" title="Edit task">
+                      ✏️
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Pro Tip */}
             {stepContent.tip && (
